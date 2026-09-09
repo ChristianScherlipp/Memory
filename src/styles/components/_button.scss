@@ -12,7 +12,7 @@
     background-color: $color-secondary;
     color: $color-primary;
     font-family: $font-body;
-    font-size: 1.125rem;
+    font-size: 2.5rem;
     cursor: pointer;
     transition: transform 0.1s ease, filter 0.1s ease;
 
@@ -27,8 +27,8 @@
 
 .button__icon {
     flex: none;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2.75rem;
+    height: 2rem;
 }
 
 .button__label {
