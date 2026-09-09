@@ -27,4 +27,6 @@
 .page-start__title {
     color: $color-text;
     font-size: 8.75rem;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
