@@ -3,10 +3,5 @@
    Nur @use / @forward – kein eigenes CSS
    ============================================ */
 
-@use "vendor";
-@use "abstract";
-@use "base";
-@use "layout";
-@use "components";
-@use "pages";
-@use "themes";
+@use "components/main";
+@use "pages/index";

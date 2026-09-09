@@ -9,6 +9,7 @@ import { CONTAINER_ID, FLIP_BACK_DELAY_MS } from "./config/settings";
 import { bindBoardEvents } from "./ui/events";
 import { requireElement } from "./ui/dom";
 import { renderGame } from "./ui/render";
+import { bindPlayButton } from "./ui/navigation";
 import type { CardId } from "./types";
 
 const CONTENT: HTMLElement = requireElement(CONTAINER_ID);
@@ -41,6 +42,7 @@ function handleCardClick(id: CardId): void {
 
 /** Baut die Startansicht auf und registriert die Ereignisse. */
 function init(): void {
+  bindPlayButton("play-button", "page-settings");
   bindBoardEvents(CONTENT, handleCardClick);
   draw();
 }

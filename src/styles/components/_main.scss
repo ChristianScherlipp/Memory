@@ -1,0 +1,32 @@
+// ============================================
+//   Zentrale Sammelstelle – hier kommt alles rein,
+//   was per @forward exportiert werden soll.
+//   Reihenfolge nach 7-1-Pattern.
+// ============================================
+
+// vendor/ – aktuell keine Partials
+
+// abstract/
+@forward "../abstract/variables";
+@forward "../abstract/functions";
+@forward "../abstract/mixins";
+
+// base/
+@forward "../base/reset";
+@forward "../base/typography";
+@forward "../base/base";
+
+// layout/
+@forward "../layout/header";
+@forward "../layout/footer";
+@forward "../layout/grid";
+@forward "../layout/nav";
+
+// components/
+@forward "button";
+@forward "card";
+@forward "modal";
+
+// themes/
+@forward "../themes/light";
+@forward "../themes/dark";

@@ -1,1 +1,28 @@
 // Basis-Typografie
+
+@use "../abstract/variables" as *;
+
+@font-face {
+    font-family: "Almarai";
+    src: url("/assets/fonts/almarai-v19-latin-regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Red Rose";
+    src: url("/assets/fonts/red-rose-v25-latin-regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    font-family: $font-body;
+}
+
+h1,
+h2 {
+    font-family: $font-heading;
+}

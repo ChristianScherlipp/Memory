@@ -1,1 +1,37 @@
 // Buttons
+
+@use "../abstract/variables" as *;
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 999px;
+    background-color: $color-secondary;
+    color: $color-primary;
+    font-family: $font-body;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.1s ease;
+
+    &:hover {
+        filter: brightness(1.05);
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
+.button__icon {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.button__label {
+    text-transform: lowercase;
+    font-weight: 700;
+}
