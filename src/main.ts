@@ -2,7 +2,7 @@
  * Einstiegspunkt: initialisiert das Memory-Spiel und verbindet UI mit Logik.
  */
 
-import "./scss/main.scss";
+import "./styles/main.scss";
 
 import { Game } from "./core/game";
 import { CONTAINER_ID, FLIP_BACK_DELAY_MS } from "./config/settings";
