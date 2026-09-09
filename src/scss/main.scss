@@ -1,0 +1,12 @@
+/* ============================================
+   Memory Spiel – Haupt-Stylesheet (7-1 Pattern)
+   Nur @use / @forward – kein eigenes CSS
+   ============================================ */
+
+@use "vendor";
+@use "abstract";
+@use "base";
+@use "layout";
+@use "components";
+@use "pages";
+@use "themes";
