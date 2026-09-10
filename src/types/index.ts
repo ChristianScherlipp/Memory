@@ -27,3 +27,19 @@ export interface GameState {
   moves: number;
   matchedPairs: number;
 }
+
+/** Wählbare Spielerfarbe. */
+export type PlayerColor = "orange" | "blue";
+
+/** Wählbare Spielfeldgröße (Spalten × Zeilen der Beschreibung nach). */
+export type BoardSize = "4x4" | "4x6" | "6x6";
+
+/** Kennung einer der optischen Theme-Varianten. */
+export type ThemeId = "v1" | "v2" | "v3" | "v4";
+
+/** Vom Nutzer getroffene Auswahl vor Spielbeginn. */
+export interface GameSettings {
+  playerColor: PlayerColor;
+  boardSize: BoardSize;
+  theme: ThemeId;
+}

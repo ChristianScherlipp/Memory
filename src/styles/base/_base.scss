@@ -1,7 +1,8 @@
 @use "../abstract/variables" as *;
 
 body {
-    background-color: $color-background;
-    color: $color-text;
+    background-color: var(--color-bg, #{$color-background});
+    color: var(--color-text, #{$color-text});
     min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }

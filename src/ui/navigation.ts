@@ -17,7 +17,7 @@ export function showPage(id: string): void {
 /**
  * Verknüpft einen Button so, dass ein Klick zur Zielseite wechselt.
  */
-export function bindPlayButton(buttonId: string, targetPageId: string): void {
+export function bindNavButton(buttonId: string, targetPageId: string): void {
   const button: HTMLElement = requireElement(buttonId);
   button.addEventListener("click", (): void => {
     showPage(targetPageId);

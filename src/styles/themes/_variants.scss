@@ -1,0 +1,52 @@
+// Theme-Varianten: setzen CSS-Custom-Properties je Data-Attribut auf <html>.
+// Die TypeScript-Seite setzt nur `data-theme` / `data-player`.
+
+@use "../abstract/variables" as *;
+
+:root {
+    --color-bg: #{$color-background};
+    --color-text: #{$color-text};
+    --color-card-front: #{$color-card-front};
+    --color-card-back-1: #{$color-card-back};
+    --color-card-back-2: #{$color-background};
+    --color-player: #f58e39;
+}
+
+// Variante 1 – Hintergrund = Primärfarbe, Rückseite Türkis-Verlauf
+:root[data-theme="v1"] {
+    --color-bg: #303131;
+    --color-card-back-1: #4dd5bc;
+    --color-card-back-2: #286f62;
+}
+
+// Variante 2 – dunkles Petrol, Rückseite Pink → Nachtblau
+:root[data-theme="v2"] {
+    --color-bg: #294f60;
+    --color-card-back-1: #ed1b76;
+    --color-card-back-2: #0a2835;
+}
+
+// Variante 3 – heller Hintergrund, Rückseite Blau → Weiß
+:root[data-theme="v3"] {
+    --color-bg: #ffffff;
+    --color-text: #1a1a1a;
+    --color-card-back-1: #1e7594;
+    --color-card-back-2: #ffffff;
+}
+
+// Variante 4 – heller Hintergrund, Rückseite Orange → Weiß
+:root[data-theme="v4"] {
+    --color-bg: #ffffff;
+    --color-text: #1a1a1a;
+    --color-card-back-1: #f3832d;
+    --color-card-back-2: #ffffff;
+}
+
+// Spielerfarbe – nur der Rahmen aufgedeckter Karten
+:root[data-player="orange"] {
+    --color-player: #f58e39;
+}
+
+:root[data-player="blue"] {
+    --color-player: #2bb1ff;
+}

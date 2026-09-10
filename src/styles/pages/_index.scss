@@ -19,14 +19,103 @@
     }
 }
 
+.page-start__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: center;
+    text-align: left;
+}
+
 .page-start__intro {
-    color: $color-text;
+    color: var(--color-text, #{$color-text});
     font-size: 3rem;
 }
 
 .page-start__title {
-    color: $color-text;
+    color: var(--color-text, #{$color-text});
     font-size: 8.75rem;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+}
+
+.page-settings__title {
+    color: var(--color-text, #{$color-text});
+    font-size: 3.5rem;
+}
+
+.status {
+    color: var(--color-text, #{$color-text});
+    font-size: 1.5rem;
+}
+
+// ---- Einstellungsformular ----
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: min(90vw, 40rem);
+}
+
+.settings__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.settings__legend {
+    color: var(--color-text, #{$color-text});
+    font-family: $font-heading;
+    font-size: 1.75rem;
+}
+
+.settings__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border: 2px solid currentcolor;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text, #{$color-text});
+    font-family: $font-body;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.15s ease,
+        border-color 0.15s ease;
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
+.option--active {
+    border-color: var(--color-player, #f58e39);
+    background-color: var(--color-player, #f58e39);
+    color: #ffffff;
+}
+
+.option__swatch {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+
+    &[data-color="orange"] {
+        background-color: #f58e39;
+    }
+
+    &[data-color="blue"] {
+        background-color: #2bb1ff;
+    }
 }

@@ -8,8 +8,10 @@
 <body>
     <div id="app">
         <section id="page-start" class="page">
-            <p class="page-start__intro">It's time to play.</p>
-            <h1 class="page-start__title">Ready to play ?</h1>
+            <div class="page-start__heading">
+                <p class="page-start__intro">It's time to play.</p>
+                <h1 class="page-start__title">Ready to play ?</h1>
+            </div>
             <button id="play-button" class="button button--play" type="button">
                 <img class="button__icon" src="./assets/icons/controller.svg" alt="">
                 <span class="button__label">play</span>
@@ -17,6 +19,10 @@
             </button>
         </section>
         <section id="page-settings" class="page" hidden>
+            <h2 class="page-settings__title">Einstellungen</h2>
+            <div id="settings-form"></div>
+        </section>
+        <section id="page-game" class="page" hidden>
             <div id="game-board"></div>
         </section>
     </div>

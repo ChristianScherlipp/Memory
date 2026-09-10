@@ -3,7 +3,6 @@
  */
 
 import { createDeck } from "./board";
-import { PAIR_COUNT } from "../config/settings";
 import type { Card, CardId, GameState } from "../types";
 
 /** Anzahl gleichzeitig offener Karten, die ein Zug vergleicht. */
@@ -12,9 +11,11 @@ const CARDS_PER_TURN: number = 2;
 /** Verwaltet eine einzelne Memory-Partie. */
 export class Game {
   private state: GameState;
+  private readonly pairCount: number;
 
-  constructor() {
-    this.state = Game.createInitialState();
+  constructor(pairCount: number) {
+    this.pairCount = pairCount;
+    this.state = Game.createInitialState(pairCount);
   }
 
   /** Liefert den aktuellen Zustand (nur lesend gedacht). */
@@ -24,12 +25,12 @@ export class Game {
 
   /** Ob die aktuelle Partie gewonnen ist. */
   public isWon(): boolean {
-    return this.state.matchedPairs === PAIR_COUNT;
+    return this.state.matchedPairs === this.pairCount;
   }
 
   /** Startet eine neue Partie mit frisch gemischtem Deck. */
   public reset(): void {
-    this.state = Game.createInitialState();
+    this.state = Game.createInitialState(this.pairCount);
   }
 
   /**
@@ -73,9 +74,9 @@ export class Game {
     return this.getOpenCards().length >= CARDS_PER_TURN;
   }
 
-  private static createInitialState(): GameState {
+  private static createInitialState(pairCount: number): GameState {
     return {
-      cards: createDeck(),
+      cards: createDeck(pairCount),
       status: "idle",
       moves: 0,
       matchedPairs: 0,

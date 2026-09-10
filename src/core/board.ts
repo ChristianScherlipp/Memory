@@ -18,9 +18,10 @@ function createPair(symbol: CardSymbol, pairIndex: number): Card[] {
 }
 
 /**
- * Erzeugt ein vollständig gemischtes Deck aus allen konfigurierten Symbolen.
+ * Erzeugt ein vollständig gemischtes Deck mit `pairCount` Kartenpaaren.
  */
-export function createDeck(): Card[] {
-  const pairs: Card[] = CARD_SYMBOLS.flatMap(createPair);
+export function createDeck(pairCount: number): Card[] {
+  const symbols: readonly CardSymbol[] = CARD_SYMBOLS.slice(0, pairCount);
+  const pairs: Card[] = symbols.flatMap(createPair);
   return shuffle(pairs);
 }
