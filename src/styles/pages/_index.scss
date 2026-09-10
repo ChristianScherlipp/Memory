@@ -17,6 +17,11 @@
     &[hidden] {
         display: none;
     }
+
+    // Nur programmatisches Fokusziel beim Seitenwechsel – kein Fokusring nötig.
+    &:focus {
+        outline: none;
+    }
 }
 
 .page-start__heading {

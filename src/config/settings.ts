@@ -62,6 +62,23 @@ export const THEME_IMAGE_DIRS: Record<ThemeId, string> = {
   v4: "food_theme",
 };
 
+/** Sieg-Bild eines Themes: `player_<farbe>.svg` oder ein fester Pokal. */
+export type WinFigure = "player" | "trophy";
+
+/**
+ * Bausteine des Sieg-Screens je Theme – nicht jedes Theme hat ein Confetti-
+ * Bild, und `games_theme_cards` hat statt Spielerbildern nur einen Pokal.
+ */
+export const THEME_WIN_ASSETS: Record<
+  ThemeId,
+  { readonly confetti: boolean; readonly figure: WinFigure }
+> = {
+  v1: { confetti: true, figure: "player" },
+  v2: { confetti: false, figure: "trophy" },
+  v3: { confetti: false, figure: "player" },
+  v4: { confetti: false, figure: "player" },
+};
+
 /** Eigenschaften je Spielfeldgröße: Paaranzahl und Rasterspalten. */
 export const BOARD_SIZES: Record<
   BoardSize,

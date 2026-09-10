@@ -10,6 +10,7 @@ import {
   GAME_END_IMAGE_BASE_PATH,
   PLAYER_COLORS,
   THEME_IMAGE_DIRS,
+  THEME_WIN_ASSETS,
   otherPlayerColor,
 } from "../config/settings";
 import type {
@@ -35,6 +36,14 @@ export function playerHex(player: PlayerId, settings: GameSettings): string {
   return PLAYER_COLORS[color];
 }
 
+/** Sichtbarer alt-Text einer aufgedeckten Karte ("Motif 3"). */
+function cardFaceAlt(card: Card): string {
+  if (!card.isFlipped && !card.isMatched) {
+    return "";
+  }
+  return `Motif ${card.symbol.replace(/\D/g, "")}`;
+}
+
 /** Markup einer einzelnen Karte mit Vorder- und Rückseite (für den Flip). */
 export function renderCard(card: Card, theme: ThemeId): string {
   const openClass: string =
@@ -45,7 +54,7 @@ export function renderCard(card: Card, theme: ThemeId): string {
       <span class="card__inner">
         <span class="card__face card__face--back"></span>
         <span class="card__face card__face--front">
-          <img class="card__image" src="${cardImageSrc(card.symbol, theme)}" alt="">
+          <img class="card__image" src="${cardImageSrc(card.symbol, theme)}" alt="${cardFaceAlt(card)}">
         </span>
       </span>
     </button>
@@ -75,10 +84,10 @@ function renderPlayer(
   const activeClass: string = active ? " scoreboard__player--active" : "";
   const hex: string = playerHex(player, settings);
   return `
-    <span class="scoreboard__player${activeClass}" style="color: ${hex}">
+    <li class="scoreboard__player${activeClass}" style="color: ${hex}">
       <span class="scoreboard__swatch" style="background: ${hex}"></span>
-      Spieler ${player}: ${state.scores[player]}
-    </span>
+      Player ${player}: ${state.scores[player]}
+    </li>
   `;
 }
 
@@ -86,10 +95,10 @@ function renderPlayer(
 function renderTurnLine(state: GameState, winner: PlayerId | undefined): string {
   if (state.status === "won") {
     const text: string =
-      winner === undefined ? "Unentschieden!" : `Spieler ${winner} gewinnt!`;
+      winner === undefined ? "Draw!" : `Player ${winner} wins!`;
     return `<p class="game-bar__turn">${text}</p>`;
   }
-  return `<p class="game-bar__turn">Am Zug: Spieler ${state.currentPlayer}</p>`;
+  return `<p class="game-bar__turn">Player ${state.currentPlayer}'s turn</p>`;
 }
 
 /** Markup der Spielleiste: Punktestand, aktueller Spieler, Exit-Button. */
@@ -100,10 +109,10 @@ export function renderGameBar(
 ): string {
   return `
     <header class="game-bar">
-      <div class="scoreboard">
+      <ul class="scoreboard">
         ${renderPlayer(1, state, settings)}
         ${renderPlayer(2, state, settings)}
-      </div>
+      </ul>
       ${renderTurnLine(state, winner)}
       <button class="button button--exit" type="button" id="${EXIT_GAME_BUTTON_ID}">
         Exit Game
@@ -144,14 +153,28 @@ function renderBackButton(): string {
   `;
 }
 
+/** Dateiname und alt-Text des Sieg-Bilds je nach Theme. */
+function winFigure(settings: GameSettings): { name: string; alt: string } {
+  if (THEME_WIN_ASSETS[settings.theme].figure === "trophy") {
+    return { name: "winnerpokal", alt: "Winner's trophy" };
+  }
+  return {
+    name: `player_${settings.playerColor}`,
+    alt: `${colorWord(settings.playerColor)} wins`,
+  };
+}
+
 /** Sieg-Ansicht (Spieler 1 hat gewonnen). */
 function renderWin(settings: GameSettings): string {
-  const color: PlayerColor = settings.playerColor;
+  const figure: { name: string; alt: string } = winFigure(settings);
+  const confetti: string = THEME_WIN_ASSETS[settings.theme].confetti
+    ? `<img class="game-end__confetti" src="${endImageSrc("confetti", settings.theme)}" alt="">`
+    : "";
   return `
-    <img class="game-end__confetti" src="${endImageSrc("confetti", settings.theme)}" alt="">
+    ${confetti}
     <p class="game-end__lead">The winner is</p>
-    <p class="game-end__player">${colorWord(color)}</p>
-    <img class="game-end__figure" src="${endImageSrc(`player_${color}`, settings.theme)}" alt="">
+    <h1 class="game-end__player">${colorWord(settings.playerColor)}</h1>
+    <img class="game-end__figure" src="${endImageSrc(figure.name, settings.theme)}" alt="${figure.alt}">
   `;
 }
 
@@ -160,7 +183,7 @@ function renderGameOver(state: GameState, settings: GameSettings): string {
   const one: PlayerColor = settings.playerColor;
   const two: PlayerColor = otherPlayerColor(one);
   return `
-    <p class="game-end__title game-end__title--back">game over</p>
+    <h1 class="game-end__title game-end__title--back">game over</h1>
     <p class="game-end__lead">final score</p>
     <ul class="game-end__scores">
       <li>${colorWord(one)}: ${state.scores[1]}</li>
@@ -173,8 +196,8 @@ function renderGameOver(state: GameState, settings: GameSettings): string {
 function renderDraw(settings: GameSettings): string {
   return `
     <p class="game-end__lead">it's a</p>
-    <p class="game-end__title game-end__title--back">DRAW</p>
-    <img class="game-end__figure" src="${endImageSrc("draw", settings.theme)}" alt="">
+    <h1 class="game-end__title game-end__title--back"><strong>DRAW</strong></h1>
+    <img class="game-end__figure" src="${endImageSrc("draw", settings.theme)}" alt="It's a draw">
   `;
 }
 

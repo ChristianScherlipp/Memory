@@ -5,13 +5,15 @@
 import { requireElement } from "./dom";
 
 /**
- * Zeigt die Sektion mit der angegebenen ID und versteckt alle anderen `.page`.
+ * Zeigt die Sektion mit der angegebenen ID, versteckt alle anderen `.page`
+ * und setzt den Fokus auf die neue Sektion (Tastatur-/Screenreader-Nutzung).
  */
 export function showPage(id: string): void {
   const pages: NodeListOf<HTMLElement> = document.querySelectorAll(".page");
   pages.forEach((page: HTMLElement): void => {
     page.hidden = page.id !== id;
   });
+  document.getElementById(id)?.focus();
 }
 
 /**

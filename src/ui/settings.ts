@@ -22,7 +22,7 @@ type SettingsGroup = keyof GameSettings;
 
 const PLAYER_LABELS: Record<PlayerColor, string> = {
   orange: "Orange",
-  blue: "Blau",
+  blue: "Blue",
 };
 
 const SIZE_LABELS: Record<BoardSize, string> = {
@@ -39,7 +39,7 @@ const GROUPS: ReadonlyArray<{
 }> = [
   {
     group: "playerColor",
-    legend: "Spielerfarbe",
+    legend: "Player colour",
     options: Object.keys(PLAYER_COLORS).map((value: string): Option => ({
       value,
       label: PLAYER_LABELS[value as PlayerColor],
@@ -47,7 +47,7 @@ const GROUPS: ReadonlyArray<{
   },
   {
     group: "boardSize",
-    legend: "Spielfeldgröße",
+    legend: "Board size",
     options: Object.keys(BOARD_SIZES).map((value: string): Option => ({
       value,
       label: SIZE_LABELS[value as BoardSize],
@@ -55,10 +55,10 @@ const GROUPS: ReadonlyArray<{
   },
   {
     group: "theme",
-    legend: "Darstellung",
+    legend: "Theme",
     options: THEME_IDS.map((value: ThemeId, index: number): Option => ({
       value,
-      label: `Variante ${index + 1}`,
+      label: `Variant ${index + 1}`,
     })),
   },
 ];
@@ -108,7 +108,7 @@ export function renderSettings(current: GameSettings): string {
     <form class="settings">
       ${groups}
       <button class="button" type="button" id="${START_GAME_BUTTON_ID}">
-        Spiel starten
+        Start game
       </button>
     </form>
   `;

@@ -12,8 +12,9 @@
 }
 
 .game-end__confetti {
-    width: min(70vw, 22rem);
+    width: min(92vw, 34rem);
     height: auto;
+    margin-bottom: 0.5rem;
 }
 
 .game-end__figure {
@@ -42,6 +43,11 @@
 
 .game-end__title--back {
     color: var(--color-card-back-1, #{$color-card-back});
+}
+
+.game-end__title strong {
+    font: inherit;
+    font-weight: 700;
 }
 
 .game-end__scores {
