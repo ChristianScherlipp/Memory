@@ -9,6 +9,7 @@ import { loadSettings, saveSettings } from "./core/settings-store";
 import {
   BOARD_SIZES,
   CONTAINER_ID,
+  EXIT_GAME_BUTTON_ID,
   FLIP_BACK_DELAY_MS,
   GAME_PAGE_ID,
   PLAY_BUTTON_ID,
@@ -17,7 +18,7 @@ import {
 } from "./config/settings";
 import { bindBoardEvents } from "./ui/events";
 import { requireElement } from "./ui/dom";
-import { renderGame } from "./ui/render";
+import { mountGame, syncGame } from "./ui/game-view";
 import { bindNavButton, showPage } from "./ui/navigation";
 import { bindSettingsEvents, renderSettings } from "./ui/settings";
 import { applySettings } from "./ui/theme";
@@ -28,13 +29,19 @@ const SETTINGS_ROOT: HTMLElement = requireElement(SETTINGS_CONTAINER_ID);
 
 let settings: GameSettings = loadSettings();
 let game: Game | undefined;
+let boardMounted: boolean = false;
 
-/** Zeichnet den aktuellen Spielzustand in den Container. */
+/** Zeichnet den aktuellen Spielzustand: einmal aufbauen, danach nur angleichen. */
 function draw(): void {
   if (game === undefined) {
     return;
   }
-  CONTENT.innerHTML = renderGame(game.getState(), settings.boardSize, settings.theme);
+  if (boardMounted) {
+    syncGame(CONTENT, game, settings);
+  } else {
+    mountGame(CONTENT, game, settings);
+    boardMounted = true;
+  }
 }
 
 /** Zeichnet das Einstellungsformular mit der aktuellen Auswahl. */
@@ -53,8 +60,16 @@ function updateSettings(next: GameSettings): void {
 /** Startet eine Partie mit der gewählten Spielfeldgröße. */
 function startGame(): void {
   game = new Game(BOARD_SIZES[settings.boardSize].pairs);
+  boardMounted = false;
   showPage(GAME_PAGE_ID);
   draw();
+}
+
+/** Verlässt das laufende Spiel und kehrt zu den Einstellungen zurück. */
+function exitGame(): void {
+  game = undefined;
+  boardMounted = false;
+  showPage(SETTINGS_PAGE_ID);
 }
 
 /** Wertet einen abgeschlossenen Zug nach kurzer Verzögerung aus. */
@@ -77,6 +92,16 @@ function handleCardClick(id: CardId): void {
   }
 }
 
+/** Delegierter Klick-Handler für den Exit-Button der Spielleiste. */
+function bindExitButton(): void {
+  CONTENT.addEventListener("click", (event: MouseEvent): void => {
+    const target: EventTarget | null = event.target;
+    if (target instanceof HTMLElement && target.closest(`#${EXIT_GAME_BUTTON_ID}`)) {
+      exitGame();
+    }
+  });
+}
+
 /** Baut die Ansichten auf und registriert die Ereignisse. */
 function init(): void {
   applySettings(settings);
@@ -84,6 +109,7 @@ function init(): void {
   bindNavButton(PLAY_BUTTON_ID, SETTINGS_PAGE_ID);
   bindSettingsEvents(SETTINGS_ROOT, (): GameSettings => settings, updateSettings, startGame);
   bindBoardEvents(CONTENT, handleCardClick);
+  bindExitButton();
 }
 
 init();

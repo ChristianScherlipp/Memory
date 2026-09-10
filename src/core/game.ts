@@ -3,7 +3,7 @@
  */
 
 import { createDeck } from "./board";
-import type { Card, CardId, GameState } from "../types";
+import type { Card, CardId, GameState, PlayerId } from "../types";
 
 /** Anzahl gleichzeitig offener Karten, die ein Zug vergleicht. */
 const CARDS_PER_TURN: number = 2;
@@ -26,6 +26,15 @@ export class Game {
   /** Ob die aktuelle Partie gewonnen ist. */
   public isWon(): boolean {
     return this.state.matchedPairs === this.pairCount;
+  }
+
+  /** Sieger der beendeten Partie; `undefined` bei Gleichstand oder laufendem Spiel. */
+  public getWinner(): PlayerId | undefined {
+    const [first, second] = [this.state.scores[1], this.state.scores[2]];
+    if (!this.isWon() || first === second) {
+      return undefined;
+    }
+    return first > second ? 1 : 2;
   }
 
   /** Startet eine neue Partie mit frisch gemischtem Deck. */
@@ -63,10 +72,17 @@ export class Game {
     this.state.moves += 1;
     if (Game.isPair(openCards)) {
       this.markMatched(openCards);
+      this.state.scores[this.state.currentPlayer] += 1;
     } else {
       this.hide(openCards);
+      this.switchPlayer();
     }
     this.updateStatus();
+  }
+
+  /** Wechselt das Zugrecht zum jeweils anderen Spieler. */
+  private switchPlayer(): void {
+    this.state.currentPlayer = this.state.currentPlayer === 1 ? 2 : 1;
   }
 
   /** Ob aktuell auf die Auswertung eines Zuges gewartet wird. */
@@ -80,6 +96,8 @@ export class Game {
       status: "idle",
       moves: 0,
       matchedPairs: 0,
+      currentPlayer: 1,
+      scores: { 1: 0, 2: 0 },
     };
   }
 

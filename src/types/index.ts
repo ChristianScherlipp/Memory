@@ -12,6 +12,9 @@ export type CardSymbol = string;
 /** Aktueller Status einer Spielpartie. */
 export type GameStatus = "idle" | "running" | "won";
 
+/** Kennung eines der beiden abwechselnd ziehenden Spieler. */
+export type PlayerId = 1 | 2;
+
 /** Eine einzelne Spielkarte. */
 export interface Card {
   id: CardId;
@@ -26,6 +29,8 @@ export interface GameState {
   status: GameStatus;
   moves: number;
   matchedPairs: number;
+  currentPlayer: PlayerId;
+  scores: Record<PlayerId, number>;
 }
 
 /** Wählbare Spielerfarbe. */

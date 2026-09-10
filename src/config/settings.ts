@@ -23,6 +23,9 @@ export const PLAY_BUTTON_ID: string = "play-button";
 /** ID des Buttons, der aus den Einstellungen ins Spiel wechselt. */
 export const START_GAME_BUTTON_ID: string = "start-game-button";
 
+/** ID des Buttons, der das laufende Spiel verlässt. */
+export const EXIT_GAME_BUTTON_ID: string = "exit-game-button";
+
 /** IDs der `.page`-Sektionen in der gewünschten Reihenfolge. */
 export const START_PAGE_ID: string = "page-start";
 export const SETTINGS_PAGE_ID: string = "page-settings";
@@ -64,6 +67,11 @@ export const PLAYER_COLORS: Record<PlayerColor, string> = {
   orange: "#f58e39",
   blue: "#2bb1ff",
 };
+
+/** Farbe des jeweils anderen Spielers (Spieler 2 erhält die freie Farbe). */
+export function otherPlayerColor(color: PlayerColor): PlayerColor {
+  return color === "orange" ? "blue" : "orange";
+}
 
 /** Alle wählbaren Theme-Varianten. */
 export const THEME_IDS: readonly ThemeId[] = ["v1", "v2", "v3", "v4"];
