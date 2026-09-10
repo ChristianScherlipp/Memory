@@ -31,6 +31,21 @@
         <!-- Game screen: status bar + board are rendered into #game-board -->
         <section id="page-game" class="page" tabindex="-1" aria-label="Game board" hidden>
             <div id="game-board"></div>
+
+            <dialog id="exit-dialog" class="modal" aria-labelledby="exit-dialog-title">
+                <div class="modal__box">
+                    <h2 id="exit-dialog-title" class="modal__title">Leave the game?</h2>
+                    <p class="modal__text">Your current progress will be lost.</p>
+                    <div class="modal__actions">
+                        <button type="button" id="exit-cancel-button" class="button">
+                            Continue game
+                        </button>
+                        <button type="button" id="exit-confirm-button" class="button button--exit">
+                            Back to settings
+                        </button>
+                    </div>
+                </div>
+            </dialog>
         </section>
 
         <!-- End screen: win / game over / draw is rendered into #game-end -->

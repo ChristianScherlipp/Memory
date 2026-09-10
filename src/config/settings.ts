@@ -29,6 +29,15 @@ export const START_GAME_BUTTON_ID: string = "start-game-button";
 /** ID des Buttons, der das laufende Spiel verlässt. */
 export const EXIT_GAME_BUTTON_ID: string = "exit-game-button";
 
+/** ID des Bestätigungsdialogs vor dem Verlassen des Spiels. */
+export const EXIT_DIALOG_ID: string = "exit-dialog";
+
+/** ID des Dialog-Buttons, der das Spiel wirklich verlässt. */
+export const EXIT_CONFIRM_BUTTON_ID: string = "exit-confirm-button";
+
+/** ID des Dialog-Buttons, der im Spiel bleibt. */
+export const EXIT_CANCEL_BUTTON_ID: string = "exit-cancel-button";
+
 /** ID des Buttons auf dem End-Screen zurück zur Startseite. */
 export const BACK_TO_START_BUTTON_ID: string = "back-to-start-button";
 

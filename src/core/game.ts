@@ -147,10 +147,11 @@ export class Game {
     );
   }
 
-  /** Markiert die übergebenen Karten als Treffer und zählt das Paar. */
+  /** Markiert die Karten als Treffer des aktuellen Spielers und zählt das Paar. */
   private markMatched(cards: readonly Card[]): void {
     for (const card of cards) {
       card.isMatched = true;
+      card.matchedBy = this.state.currentPlayer;
     }
     this.state.matchedPairs += 1;
   }

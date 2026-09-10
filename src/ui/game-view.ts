@@ -32,14 +32,36 @@ export function mountGameEnd(
   root.innerHTML = renderGameEnd(outcome, game.getState(), settings);
 }
 
-/** Setzt die Karten-Klassen passend zum Zustand (Flip / Treffer). */
-function syncCards(root: HTMLElement, cards: readonly Card[]): void {
+/** Friert die Umrandung einer gematchten Karte auf die Farbe des Finders ein. */
+function lockMatchColor(
+  element: HTMLElement,
+  card: Card,
+  settings: GameSettings,
+): void {
+  if (card.isMatched && card.matchedBy !== undefined) {
+    element.style.setProperty(
+      "--card-border",
+      playerHex(card.matchedBy, settings),
+    );
+  }
+}
+
+/** Setzt Klassen und Umrandungsfarbe der Karten passend zum Zustand. */
+function syncCards(
+  root: HTMLElement,
+  cards: readonly Card[],
+  settings: GameSettings,
+): void {
   for (const card of cards) {
     const element: HTMLElement | null = root.querySelector(
       `.card[data-card-id="${card.id}"]`,
     );
-    element?.classList.toggle("card--open", card.isFlipped || card.isMatched);
-    element?.classList.toggle("card--matched", card.isMatched);
+    if (element === null) {
+      continue;
+    }
+    element.classList.toggle("card--open", card.isFlipped || card.isMatched);
+    element.classList.toggle("card--matched", card.isMatched);
+    lockMatchColor(element, card, settings);
   }
 }
 
@@ -68,6 +90,6 @@ export function syncGame(
   settings: GameSettings,
 ): void {
   const state: GameState = game.getState();
-  syncCards(root, state.cards);
+  syncCards(root, state.cards, settings);
   syncBar(root, state, settings, game);
 }

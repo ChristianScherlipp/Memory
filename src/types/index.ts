@@ -24,6 +24,8 @@ export interface Card {
   symbol: CardSymbol;
   isFlipped: boolean;
   isMatched: boolean;
+  /** Spieler, der das Paar aufgedeckt hat (erst gesetzt, wenn gematcht). */
+  matchedBy?: PlayerId;
 }
 
 /** Vollständiger Zustand einer Spielpartie. */

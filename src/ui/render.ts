@@ -14,7 +14,6 @@ import {
   otherPlayerColor,
 } from "../config/settings";
 import type {
-  BoardSize,
   Card,
   GameOutcome,
   GameSettings,
@@ -44,34 +43,45 @@ function cardFaceAlt(card: Card): string {
   return `Motif ${card.symbol.replace(/\D/g, "")}`;
 }
 
+/**
+ * Inline-Style, der die Kartenumrandung auf die Farbe des Spielers festhält,
+ * der das Paar aufgedeckt hat. Leer, solange die Karte nicht gematcht ist.
+ */
+function matchBorderStyle(card: Card, settings: GameSettings): string {
+  if (!card.isMatched || card.matchedBy === undefined) {
+    return "";
+  }
+  return ` style="--card-border: ${playerHex(card.matchedBy, settings)}"`;
+}
+
 /** Markup einer einzelnen Karte mit Vorder- und Rückseite (für den Flip). */
-export function renderCard(card: Card, theme: ThemeId): string {
+export function renderCard(card: Card, settings: GameSettings): string {
   const openClass: string =
     card.isFlipped || card.isMatched ? " card--open" : "";
   const matchedClass: string = card.isMatched ? " card--matched" : "";
+  const lock: string = matchBorderStyle(card, settings);
   return `
-    <button class="card${openClass}${matchedClass}" data-card-id="${card.id}" type="button">
+    <button class="card${openClass}${matchedClass}" data-card-id="${card.id}" type="button"${lock}>
       <span class="card__inner">
         <span class="card__face card__face--back"></span>
         <span class="card__face card__face--front">
-          <img class="card__image" src="${cardImageSrc(card.symbol, theme)}" alt="${cardFaceAlt(card)}">
+          <img class="card__image" src="${cardImageSrc(card.symbol, settings.theme)}" alt="${cardFaceAlt(card)}">
         </span>
       </span>
     </button>
   `;
 }
 
-/** Markup aller Karten des Bretts; `size` steuert die Rasterspalten (CSS). */
+/** Markup aller Karten des Bretts; `boardSize` steuert die Rasterspalten (CSS). */
 export function renderBoard(
   cards: readonly Card[],
-  size: BoardSize,
-  theme: ThemeId,
+  settings: GameSettings,
   turnColor: string,
 ): string {
   const cardsMarkup: string = cards
-    .map((card: Card): string => renderCard(card, theme))
+    .map((card: Card): string => renderCard(card, settings))
     .join("");
-  return `<div class="board" data-size="${size}" style="--color-player: ${turnColor}">${cardsMarkup}</div>`;
+  return `<div class="board" data-size="${settings.boardSize}" style="--color-player: ${turnColor}">${cardsMarkup}</div>`;
 }
 
 /** Markup einer Spieler-Kachel in der Punkteanzeige. */
@@ -130,7 +140,7 @@ export function renderGame(
   const turnColor: string = playerHex(state.currentPlayer, settings);
   return `
     ${renderGameBar(state, settings, winner)}
-    ${renderBoard(state.cards, settings.boardSize, settings.theme, turnColor)}
+    ${renderBoard(state.cards, settings, turnColor)}
   `;
 }
 

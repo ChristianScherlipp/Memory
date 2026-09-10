@@ -12,6 +12,9 @@ import {
   CONTAINER_ID,
   END_CONTAINER_ID,
   END_PAGE_ID,
+  EXIT_CANCEL_BUTTON_ID,
+  EXIT_CONFIRM_BUTTON_ID,
+  EXIT_DIALOG_ID,
   EXIT_GAME_BUTTON_ID,
   FLIP_BACK_DELAY_MS,
   GAME_PAGE_ID,
@@ -21,7 +24,7 @@ import {
   START_PAGE_ID,
 } from "./config/settings";
 import { bindBoardEvents } from "./ui/events";
-import { requireElement } from "./ui/dom";
+import { requireDialog, requireElement } from "./ui/dom";
 import { mountGame, mountGameEnd, syncGame } from "./ui/game-view";
 import { bindNavButton, showPage } from "./ui/navigation";
 import { bindSettingsEvents, renderSettings } from "./ui/settings";
@@ -31,6 +34,7 @@ import type { CardId, GameOutcome, GameSettings } from "./types";
 const CONTENT: HTMLElement = requireElement(CONTAINER_ID);
 const SETTINGS_ROOT: HTMLElement = requireElement(SETTINGS_CONTAINER_ID);
 const END_ROOT: HTMLElement = requireElement(END_CONTAINER_ID);
+const EXIT_DIALOG: HTMLDialogElement = requireDialog(EXIT_DIALOG_ID);
 
 let settings: GameSettings = loadSettings();
 let game: Game | undefined;
@@ -75,6 +79,22 @@ function exitGame(): void {
   game = undefined;
   boardMounted = false;
   showPage(SETTINGS_PAGE_ID);
+}
+
+/** Öffnet die Rückfrage, ob das Spiel wirklich verlassen werden soll. */
+function askExit(): void {
+  EXIT_DIALOG.showModal();
+}
+
+/** Bestätigt die Rückfrage: Dialog schließen und Spiel verlassen. */
+function confirmExit(): void {
+  EXIT_DIALOG.close();
+  exitGame();
+}
+
+/** Bricht die Rückfrage ab: Dialog schließen, Spiel läuft weiter. */
+function cancelExit(): void {
+  EXIT_DIALOG.close();
 }
 
 /** Kehrt vom End-Screen zur Startseite zurück. */
@@ -141,7 +161,9 @@ function init(): void {
   bindNavButton(PLAY_BUTTON_ID, SETTINGS_PAGE_ID);
   bindSettingsEvents(SETTINGS_ROOT, (): GameSettings => settings, updateSettings, startGame);
   bindBoardEvents(CONTENT, handleCardClick);
-  bindDelegatedButton(CONTENT, EXIT_GAME_BUTTON_ID, exitGame);
+  bindDelegatedButton(CONTENT, EXIT_GAME_BUTTON_ID, askExit);
+  bindDelegatedButton(EXIT_DIALOG, EXIT_CONFIRM_BUTTON_ID, confirmExit);
+  bindDelegatedButton(EXIT_DIALOG, EXIT_CANCEL_BUTTON_ID, cancelExit);
   bindDelegatedButton(END_ROOT, BACK_TO_START_BUTTON_ID, backToStart);
 }
 
