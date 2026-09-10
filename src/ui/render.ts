@@ -201,18 +201,29 @@ function renderDraw(settings: GameSettings): string {
   `;
 }
 
+/** Wählt das Markup des End-Screen-Inhalts zum jeweiligen Ausgang. */
+function renderGameEndBody(
+  outcome: GameOutcome,
+  state: GameState,
+  settings: GameSettings,
+): string {
+  switch (outcome) {
+    case "player-1-wins":
+      return renderWin(settings);
+    case "player-2-wins":
+      return renderGameOver(state, settings);
+    case "draw":
+      return renderDraw(settings);
+  }
+}
+
 /** Vollständiges Markup des End-Screens je nach Ausgang der Partie. */
 export function renderGameEnd(
   outcome: GameOutcome,
   state: GameState,
   settings: GameSettings,
 ): string {
-  const body: string =
-    outcome === "player-1-wins"
-      ? renderWin(settings)
-      : outcome === "draw"
-        ? renderDraw(settings)
-        : renderGameOver(state, settings);
+  const body: string = renderGameEndBody(outcome, state, settings);
   return `
     <div class="game-end game-end--${outcome}">
       ${body}

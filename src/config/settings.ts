@@ -115,3 +115,6 @@ export const SETTINGS_STORAGE_KEY: string = "memory:settings";
 
 /** Verzögerung (ms), bevor ein nicht passendes Paar wieder zugedeckt wird. */
 export const FLIP_BACK_DELAY_MS: number = 900;
+
+/** Anzahl Karten, aus denen ein Paar besteht. */
+export const CARDS_PER_PAIR: number = 2;

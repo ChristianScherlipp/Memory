@@ -20,6 +20,12 @@ interface Option {
 /** Name einer Auswahl-Gruppe – entspricht einem Feld von `GameSettings`. */
 type SettingsGroup = keyof GameSettings;
 
+/** Eine im Formular angeklickte Auswahl (Rohwert aus dem DOM). */
+interface Choice {
+  group: SettingsGroup;
+  value: string;
+}
+
 const PLAYER_LABELS: Record<PlayerColor, string> = {
   orange: "Orange",
   blue: "Blue",
@@ -115,9 +121,7 @@ export function renderSettings(current: GameSettings): string {
 }
 
 /** Liest Gruppe und Wert aus einer angeklickten Option. */
-function readChoice(
-  target: EventTarget | null,
-): { group: SettingsGroup; value: string } | undefined {
+function readChoice(target: EventTarget | null): Choice | undefined {
   if (!(target instanceof HTMLElement)) {
     return undefined;
   }
@@ -162,7 +166,7 @@ export function bindSettingsEvents(
       onStart();
       return;
     }
-    const choice = readChoice(target);
+    const choice: Choice | undefined = readChoice(target);
     if (choice !== undefined) {
       onChange(withChoice(getCurrent(), choice.group, choice.value));
     }

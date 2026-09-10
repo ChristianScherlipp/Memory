@@ -72,7 +72,7 @@ export class Game {
       return false;
     }
 
-    (card as Card).isFlipped = true;
+    card.isFlipped = true;
     this.state.status = "running";
     return true;
   }
@@ -108,6 +108,7 @@ export class Game {
     return this.getOpenCards().length >= CARDS_PER_TURN;
   }
 
+  /** Baut den Startzustand einer Partie mit frisch gemischtem Deck. */
   private static createInitialState(pairCount: number): GameState {
     return {
       cards: createDeck(pairCount),
@@ -119,26 +120,34 @@ export class Game {
     };
   }
 
+  /** Ob die beiden offenen Karten dasselbe Symbol zeigen. */
   private static isPair(cards: readonly Card[]): boolean {
     return cards[0].symbol === cards[1].symbol;
   }
 
-  private canFlip(card: Card | undefined, openCards: readonly Card[]): boolean {
+  /** Prüft als Type-Guard, ob die Karte jetzt aufgedeckt werden darf. */
+  private canFlip(
+    card: Card | undefined,
+    openCards: readonly Card[],
+  ): card is Card {
     const isSelectable: boolean =
       card !== undefined && !card.isFlipped && !card.isMatched;
     return isSelectable && openCards.length < CARDS_PER_TURN;
   }
 
+  /** Sucht eine Karte anhand ihrer ID; `undefined`, wenn keine passt. */
   private findCard(id: CardId): Card | undefined {
     return this.state.cards.find((card: Card): boolean => card.id === id);
   }
 
+  /** Liefert alle aktuell offenen, noch nicht gematchten Karten. */
   private getOpenCards(): Card[] {
     return this.state.cards.filter(
       (card: Card): boolean => card.isFlipped && !card.isMatched,
     );
   }
 
+  /** Markiert die übergebenen Karten als Treffer und zählt das Paar. */
   private markMatched(cards: readonly Card[]): void {
     for (const card of cards) {
       card.isMatched = true;
@@ -146,12 +155,14 @@ export class Game {
     this.state.matchedPairs += 1;
   }
 
+  /** Deckt die übergebenen Karten wieder zu. */
   private hide(cards: readonly Card[]): void {
     for (const card of cards) {
       card.isFlipped = false;
     }
   }
 
+  /** Setzt den Status nach einem Zug auf `won` oder `running`. */
   private updateStatus(): void {
     this.state.status = this.isWon() ? "won" : "running";
   }

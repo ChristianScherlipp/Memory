@@ -2,7 +2,7 @@
  * Erzeugen und Aufbereiten des Kartendecks. Kennt kein DOM.
  */
 
-import { CARD_SYMBOLS } from "../config/settings";
+import { CARD_SYMBOLS, CARDS_PER_PAIR } from "../config/settings";
 import { shuffle } from "../utils/shuffle";
 import type { Card, CardSymbol } from "../types";
 
@@ -10,10 +10,11 @@ import type { Card, CardSymbol } from "../types";
  * Baut aus einem Symbol zwei zugedeckte, noch nicht gematchte Karten.
  */
 function createPair(symbol: CardSymbol, pairIndex: number): Card[] {
-  const base = { symbol, isFlipped: false, isMatched: false };
+  const base: Omit<Card, "id"> = { symbol, isFlipped: false, isMatched: false };
+  const firstId: number = pairIndex * CARDS_PER_PAIR;
   return [
-    { id: pairIndex * 2, ...base },
-    { id: pairIndex * 2 + 1, ...base },
+    { id: firstId, ...base },
+    { id: firstId + 1, ...base },
   ];
 }
 

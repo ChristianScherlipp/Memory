@@ -105,7 +105,12 @@ function scheduleTurnResolution(): void {
 
 /** Reagiert auf den Klick auf eine Karte. */
 function handleCardClick(id: CardId): void {
-  if (game === undefined || game.hasPendingTurn() || !game.flip(id)) {
+  if (game === undefined || game.hasPendingTurn()) {
+    return;
+  }
+
+  const didFlip: boolean = game.flip(id);
+  if (!didFlip) {
     return;
   }
 
