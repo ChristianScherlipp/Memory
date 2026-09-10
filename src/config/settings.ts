@@ -57,14 +57,23 @@ export const CARD_SYMBOLS: readonly CardSymbol[] = Array.from(
   (_unused: unknown, index: number): CardSymbol => `front${index + 1}`,
 );
 
-/** Basispfad der Kartenbilder unterhalb von `public/`. */
-export const CARD_IMAGE_BASE_PATH: string = "/assets/img/front";
+/** Basispfad der Kartenbilder unterhalb von `public/` (ohne führenden Slash). */
+export const CARD_IMAGE_BASE_PATH: string = "assets/img/front";
 
-/** Basispfad der End-Screen-Bilder unterhalb von `public/`. */
-export const GAME_END_IMAGE_BASE_PATH: string = "/assets/img/game_end";
+/** Basispfad der End-Screen-Bilder unterhalb von `public/` (ohne führenden Slash). */
+export const GAME_END_IMAGE_BASE_PATH: string = "assets/img/game_end";
 
-/** Basispfad der Kategorie-Icons im Einstellungsformular unterhalb von `public/`. */
-export const SETTINGS_ICON_BASE_PATH: string = "/assets/img/settings";
+/** Basispfad der Kategorie-Icons im Einstellungsformular (ohne führenden Slash). */
+export const SETTINGS_ICON_BASE_PATH: string = "assets/img/settings";
+
+/**
+ * Stellt den in `vite.config.ts` gesetzten `base`-Pfad voran.
+ * `import.meta.env.BASE_URL` ist im Dev `/` und im Build z. B. `/Memory/dist/`,
+ * damit funktionieren die Asset-URLs auch im Unterordner auf dem Server.
+ */
+export function assetUrl(path: string): string {
+  return `${import.meta.env.BASE_URL}${path}`;
+}
 
 /** Ordnername der Kartenbilder je Theme-Variante. */
 export const THEME_IMAGE_DIRS: Record<ThemeId, string> = {

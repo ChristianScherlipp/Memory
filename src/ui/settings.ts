@@ -13,6 +13,7 @@ import {
   START_GAME_BUTTON_ID,
   THEME_IDS,
   THEME_IMAGE_DIRS,
+  assetUrl,
 } from "../config/settings";
 import type { BoardSize, GameSettings, PlayerColor, ThemeId } from "../types";
 
@@ -99,12 +100,12 @@ const GROUPS: readonly GroupSpec[] = [
 
 /** Pfad zu einem Kategorie-Icon des Formulars. */
 function iconSrc(name: string): string {
-  return `${SETTINGS_ICON_BASE_PATH}/${name}.svg`;
+  return assetUrl(`${SETTINGS_ICON_BASE_PATH}/${name}.svg`);
 }
 
 /** Pfad zu einem Kartenmotiv des gewählten Themes für die Vorschau. */
 function previewCardSrc(theme: ThemeId, symbol: string): string {
-  return `${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`;
+  return assetUrl(`${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`);
 }
 
 /** Markup einer einzelnen Radio-Option (als Label mit verstecktem Input). */

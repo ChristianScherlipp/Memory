@@ -11,6 +11,7 @@ import {
   PLAYER_COLORS,
   THEME_IMAGE_DIRS,
   THEME_WIN_ASSETS,
+  assetUrl,
   otherPlayerColor,
 } from "../config/settings";
 import type {
@@ -25,7 +26,7 @@ import type {
 
 /** Pfad zum Kartenbild eines Symbols in der gewählten Theme-Variante. */
 function cardImageSrc(symbol: string, theme: ThemeId): string {
-  return `${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`;
+  return assetUrl(`${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`);
 }
 
 /** Farbe (Hex) eines Spielers: Spieler 1 wählt, Spieler 2 bekommt den Rest. */
@@ -146,7 +147,7 @@ export function renderGame(
 
 /** Pfad zu einem End-Screen-Bild in der gewählten Theme-Variante. */
 function endImageSrc(name: string, theme: ThemeId): string {
-  return `${GAME_END_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${name}.svg`;
+  return assetUrl(`${GAME_END_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${name}.svg`);
 }
 
 /** Beschriftung eines Spielers, z. B. "orange player". */
