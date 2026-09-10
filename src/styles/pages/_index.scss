@@ -57,10 +57,18 @@
 // ---- Einstellungsformular ----
 
 .settings {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    gap: 2.5rem;
+    align-items: start;
+    width: min(94vw, 60rem);
+    text-align: left;
+}
+
+.settings__form {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    width: min(90vw, 40rem);
 }
 
 .settings__group {
@@ -73,44 +81,87 @@
 }
 
 .settings__legend {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     color: var(--color-text, #{$color-text});
     font-family: $font-heading;
-    font-size: 1.75rem;
+    font-size: 1.6rem;
+}
+
+.settings__icon {
+    width: 1.6rem;
+    height: 1.6rem;
 }
 
 .settings__options {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-left: 2.2rem;
 }
 
 .option {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.25rem;
-    border: 2px solid currentcolor;
-    border-radius: 999px;
-    background: transparent;
+    gap: 0.6rem;
+    align-self: flex-start;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.6rem;
     color: var(--color-text, #{$color-text});
     font-family: $font-body;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     cursor: pointer;
-    transition: transform 0.1s ease, background-color 0.15s ease,
-        border-color 0.15s ease;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, transform 0.12s ease;
 
-    &:active {
-        transform: scale(0.97);
+    &:hover {
+        background-color: rgba(127, 127, 127, 0.14);
     }
 }
 
 .option--active {
+    font-weight: 700;
+    transform: translateX(0.2rem);
+}
+
+.option__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.option__mark {
+    position: relative;
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid currentcolor;
+    border-radius: 50%;
+    transition: border-color 0.15s ease;
+}
+
+.option__input:checked ~ .option__mark {
     border-color: var(--color-player, #f58e39);
-    background-color: var(--color-player, #f58e39);
-    color: #ffffff;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 3px;
+        border-radius: 50%;
+        background-color: var(--color-player, #f58e39);
+        animation: option-pop 0.2s ease;
+    }
+}
+
+.option__input:focus-visible ~ .option__mark {
+    outline: 2px solid var(--color-player, #f58e39);
+    outline-offset: 2px;
 }
 
 .option__swatch {
+    flex: none;
     width: 1.1rem;
     height: 1.1rem;
     border-radius: 50%;
@@ -122,5 +173,93 @@
 
     &[data-color="blue"] {
         background-color: #2bb1ff;
+    }
+}
+
+// ---- Live-Vorschau ----
+
+.settings__preview {
+    position: sticky;
+    top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.preview-board {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 30rem;
+    padding: 2rem;
+    border-radius: 1rem;
+    background: var(--color-bg, #{$color-background});
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    animation: preview-fade 0.25s ease;
+}
+
+.preview-board__card {
+    width: 12rem;
+    max-width: 46%;
+    aspect-ratio: 3 / 4;
+    border-radius: 0.85rem;
+    animation: preview-fade 0.3s ease;
+}
+
+.preview-board__card--back {
+    transform: translateY(-1.6rem) rotate(-7deg);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(
+        135deg,
+        var(--color-card-back-1, #{$color-card-back}),
+        var(--color-card-back-2, #{$color-background})
+    );
+}
+
+.preview-board__card--front {
+    position: relative;
+    z-index: 2;
+    margin-left: -3.5rem;
+    transform: translateY(2rem) rotate(6deg);
+    border: 3px solid var(--color-player, #f58e39);
+    background: #ffffff;
+    object-fit: cover;
+}
+
+@keyframes option-pop {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes preview-fade {
+    from {
+        opacity: 0.3;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 48rem) {
+    .settings {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+
+    .settings__preview {
+        position: static;
+        order: -1;
+    }
+
+    .preview-board__card {
+        width: 10rem;
+        max-width: 42%;
     }
 }

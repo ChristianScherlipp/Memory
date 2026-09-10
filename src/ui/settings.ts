@@ -1,13 +1,18 @@
 /**
- * Erzeugt das Auswahl-Formular (Spielerfarbe, Spielfeldgröße, Theme)
- * und verknüpft dessen Klicks mit dem Spielzustand. Event-Delegation.
+ * Erzeugt das Auswahl-Formular (Theme, Spielerfarbe, Spielfeldgröße) mit
+ * Radio-Inputs, Kategorie-Icons und einer Live-Vorschau des gewählten Looks
+ * und verknüpft dessen Eingaben mit dem Spielzustand. Event-Delegation.
  */
 
 import {
   BOARD_SIZES,
+  CARD_IMAGE_BASE_PATH,
+  CARDS_PER_PAIR,
   PLAYER_COLORS,
+  SETTINGS_ICON_BASE_PATH,
   START_GAME_BUTTON_ID,
   THEME_IDS,
+  THEME_IMAGE_DIRS,
 } from "../config/settings";
 import type { BoardSize, GameSettings, PlayerColor, ThemeId } from "../types";
 
@@ -20,32 +25,62 @@ interface Option {
 /** Name einer Auswahl-Gruppe – entspricht einem Feld von `GameSettings`. */
 type SettingsGroup = keyof GameSettings;
 
-/** Eine im Formular angeklickte Auswahl (Rohwert aus dem DOM). */
+/** Eine im Formular geänderte Auswahl (Rohwert aus dem DOM). */
 interface Choice {
   group: SettingsGroup;
   value: string;
 }
+
+/** Statische Beschreibung einer Auswahl-Gruppe. */
+interface GroupSpec {
+  group: SettingsGroup;
+  legend: string;
+  icon: string;
+  options: readonly Option[];
+}
+
+/** Kartenmotiv, das die Vorderseite in der Mini-Vorschau zeigt. */
+const PREVIEW_SYMBOL: string = "front1";
+
+/** Dateiname (ohne Endung) des Icons vor der jeweiligen Kategorie. */
+const GROUP_ICONS: Record<SettingsGroup, string> = {
+  theme: "theme",
+  playerColor: "player",
+  boardSize: "board_size",
+};
+
+const THEME_LABELS: Record<ThemeId, string> = {
+  v1: "Code vibes theme",
+  v2: "Gaming theme",
+  v3: "DA Projects theme",
+  v4: "Foods theme",
+};
 
 const PLAYER_LABELS: Record<PlayerColor, string> = {
   orange: "Orange",
   blue: "Blue",
 };
 
-const SIZE_LABELS: Record<BoardSize, string> = {
-  "4x4": "4 × 4",
-  "4x6": "4 × 6",
-  "6x6": "6 × 6",
-};
+/** Beschriftung einer Spielfeldgröße als Kartenanzahl ("16 cards"). */
+function cardCountLabel(size: BoardSize): string {
+  return `${BOARD_SIZES[size].pairs * CARDS_PER_PAIR} cards`;
+}
 
 /** Optionen je Gruppe, aus der Konfiguration abgeleitet. */
-const GROUPS: ReadonlyArray<{
-  group: SettingsGroup;
-  legend: string;
-  options: readonly Option[];
-}> = [
+const GROUPS: readonly GroupSpec[] = [
+  {
+    group: "theme",
+    legend: "Game themes",
+    icon: GROUP_ICONS.theme,
+    options: THEME_IDS.map((value: ThemeId): Option => ({
+      value,
+      label: THEME_LABELS[value],
+    })),
+  },
   {
     group: "playerColor",
-    legend: "Player colour",
+    legend: "Choose player",
+    icon: GROUP_ICONS.playerColor,
     options: Object.keys(PLAYER_COLORS).map((value: string): Option => ({
       value,
       label: PLAYER_LABELS[value as PlayerColor],
@@ -54,84 +89,104 @@ const GROUPS: ReadonlyArray<{
   {
     group: "boardSize",
     legend: "Board size",
+    icon: GROUP_ICONS.boardSize,
     options: Object.keys(BOARD_SIZES).map((value: string): Option => ({
       value,
-      label: SIZE_LABELS[value as BoardSize],
-    })),
-  },
-  {
-    group: "theme",
-    legend: "Theme",
-    options: THEME_IDS.map((value: ThemeId, index: number): Option => ({
-      value,
-      label: `Variant ${index + 1}`,
+      label: cardCountLabel(value as BoardSize),
     })),
   },
 ];
 
-/** Markup einer einzelnen Options-Schaltfläche. */
+/** Pfad zu einem Kategorie-Icon des Formulars. */
+function iconSrc(name: string): string {
+  return `${SETTINGS_ICON_BASE_PATH}/${name}.svg`;
+}
+
+/** Pfad zu einem Kartenmotiv des gewählten Themes für die Vorschau. */
+function previewCardSrc(theme: ThemeId, symbol: string): string {
+  return `${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`;
+}
+
+/** Markup einer einzelnen Radio-Option (als Label mit verstecktem Input). */
 function renderOption(group: SettingsGroup, option: Option, active: boolean): string {
-  const activeClass: string = active ? " option--active" : "";
   const swatch: string =
     group === "playerColor"
       ? `<span class="option__swatch" data-color="${option.value}"></span>`
       : "";
   return `
-    <button class="option${activeClass}" type="button"
-            data-group="${group}" data-value="${option.value}"
-            aria-pressed="${active}">
-      ${swatch}${option.label}
-    </button>
+    <label class="option${active ? " option--active" : ""}">
+      <input class="option__input" type="radio" name="${group}"
+             value="${option.value}"${active ? " checked" : ""}>
+      <span class="option__mark"></span>
+      ${swatch}
+      <span class="option__label">${option.label}</span>
+    </label>
   `;
 }
 
-/** Markup einer Auswahl-Gruppe (eine Zeile mit Optionen). */
-function renderGroup(
-  group: SettingsGroup,
-  legend: string,
-  options: readonly Option[],
-  current: GameSettings,
-): string {
-  const buttons: string = options
+/** Markup der Legende einer Gruppe (Kategorie-Icon + Text). */
+function renderLegend(spec: GroupSpec): string {
+  return `
+    <legend class="settings__legend">
+      <img class="settings__icon" src="${iconSrc(spec.icon)}" alt="">
+      ${spec.legend}
+    </legend>
+  `;
+}
+
+/** Markup einer Auswahl-Gruppe (Legende plus Optionsliste). */
+function renderGroup(spec: GroupSpec, current: GameSettings): string {
+  const options: string = spec.options
     .map((option: Option): string =>
-      renderOption(group, option, current[group] === option.value),
+      renderOption(spec.group, option, current[spec.group] === option.value),
     )
     .join("");
   return `
     <fieldset class="settings__group">
-      <legend class="settings__legend">${legend}</legend>
-      <div class="settings__options">${buttons}</div>
+      ${renderLegend(spec)}
+      <div class="settings__options">${options}</div>
     </fieldset>
   `;
 }
 
-/** Vollständiges Markup des Einstellungsformulars. */
+/** Markup der Live-Vorschau: Rück- und Vorderseite im Stil der Auswahl. */
+function renderPreview(current: GameSettings): string {
+  const front: string = previewCardSrc(current.theme, PREVIEW_SYMBOL);
+  return `
+    <aside class="settings__preview" aria-hidden="true">
+      <div class="preview-board">
+        <span class="preview-board__card preview-board__card--back"></span>
+        <img class="preview-board__card preview-board__card--front"
+             src="${front}" alt="">
+      </div>
+    </aside>
+  `;
+}
+
+/** Vollständiges Markup des Einstellungsformulars (Auswahl plus Vorschau). */
 export function renderSettings(current: GameSettings): string {
-  const groups: string = GROUPS.map((entry): string =>
-    renderGroup(entry.group, entry.legend, entry.options, current),
+  const groups: string = GROUPS.map((spec: GroupSpec): string =>
+    renderGroup(spec, current),
   ).join("");
   return `
     <form class="settings">
-      ${groups}
-      <button class="button" type="button" id="${START_GAME_BUTTON_ID}">
-        Start game
-      </button>
+      <div class="settings__form">
+        ${groups}
+        <button class="button" type="button" id="${START_GAME_BUTTON_ID}">
+          Start game
+        </button>
+      </div>
+      ${renderPreview(current)}
     </form>
   `;
 }
 
-/** Liest Gruppe und Wert aus einer angeklickten Option. */
+/** Liest Gruppe und Wert aus einem geänderten Radio-Input. */
 function readChoice(target: EventTarget | null): Choice | undefined {
-  if (!(target instanceof HTMLElement)) {
+  if (!(target instanceof HTMLInputElement) || target.type !== "radio") {
     return undefined;
   }
-  const button: HTMLElement | null = target.closest(".option");
-  const group: string | undefined = button?.dataset.group;
-  const value: string | undefined = button?.dataset.value;
-  if (group === undefined || value === undefined) {
-    return undefined;
-  }
-  return { group: group as SettingsGroup, value };
+  return { group: target.name as SettingsGroup, value: target.value };
 }
 
 /** Kopiert `current` und ersetzt den Wert einer Gruppe (Rohwert aus dem DOM). */
@@ -150,8 +205,23 @@ function withChoice(
   }
 }
 
+/** Ob das Klick-Ziel der Start-Button (oder eines seiner Kinder) ist. */
+function isStartClick(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    target.closest(`#${START_GAME_BUTTON_ID}`) !== null
+  );
+}
+
+/** Setzt den Fokus nach dem Neu-Rendern zurück auf die gewählte Option. */
+function refocusOption(root: HTMLElement, choice: Choice): void {
+  const selector: string =
+    `input[name="${choice.group}"][value="${choice.value}"]`;
+  root.querySelector<HTMLInputElement>(selector)?.focus();
+}
+
 /**
- * Registriert einen delegierten Klick-Handler auf dem Formular-Container.
+ * Registriert delegierte Handler auf dem Formular-Container.
  * `onChange` erhält die neue Auswahl, `onStart` startet das Spiel.
  */
 export function bindSettingsEvents(
@@ -160,15 +230,17 @@ export function bindSettingsEvents(
   onChange: (next: GameSettings) => void,
   onStart: () => void,
 ): void {
-  root.addEventListener("click", (event: MouseEvent): void => {
-    const target: EventTarget | null = event.target;
-    if (target instanceof HTMLElement && target.closest(`#${START_GAME_BUTTON_ID}`)) {
-      onStart();
+  root.addEventListener("change", (event: Event): void => {
+    const choice: Choice | undefined = readChoice(event.target);
+    if (choice === undefined) {
       return;
     }
-    const choice: Choice | undefined = readChoice(target);
-    if (choice !== undefined) {
-      onChange(withChoice(getCurrent(), choice.group, choice.value));
+    onChange(withChoice(getCurrent(), choice.group, choice.value));
+    refocusOption(root, choice);
+  });
+  root.addEventListener("click", (event: MouseEvent): void => {
+    if (isStartClick(event.target)) {
+      onStart();
     }
   });
 }

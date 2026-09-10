@@ -54,6 +54,9 @@ export const CARD_IMAGE_BASE_PATH: string = "/assets/img/front";
 /** Basispfad der End-Screen-Bilder unterhalb von `public/`. */
 export const GAME_END_IMAGE_BASE_PATH: string = "/assets/img/game_end";
 
+/** Basispfad der Kategorie-Icons im Einstellungsformular unterhalb von `public/`. */
+export const SETTINGS_ICON_BASE_PATH: string = "/assets/img/settings";
+
 /** Ordnername der Kartenbilder je Theme-Variante. */
 export const THEME_IMAGE_DIRS: Record<ThemeId, string> = {
   v1: "code_vibes_theme",
