@@ -1,8 +1,19 @@
 @use "../abstract/variables" as *;
 
+// Maximale Inhaltsbreite – darüber hinaus reicht nur die Hintergrundfarbe.
+$content-max-width: 90rem; // 1440px
+
 body {
     background-color: var(--color-bg, #{$color-background});
     color: var(--color-text, #{$color-text});
     min-height: 100vh;
+    overflow-x: hidden;
     transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+// App-Container: zentriert, bei 1440px gedeckelt.
+#app {
+    width: 100%;
+    max-width: $content-max-width;
+    margin-inline: auto;
 }

@@ -3,8 +3,9 @@
 .board {
     display: grid;
     grid-template-columns: repeat(var(--board-columns, 4), 1fr);
-    gap: 0.75rem;
-    width: min(90vw, 40rem);
+    gap: clamp(0.35rem, 1.5vw, 0.75rem);
+    width: 100%;
+    max-width: 40rem;
 
     &[data-size="4x4"] {
         --board-columns: 4;

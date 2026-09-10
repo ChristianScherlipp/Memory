@@ -17,6 +17,12 @@
     margin-bottom: 0.5rem;
 }
 
+// Variante 1: Confetti-Grafik großflächig – bis 80rem, schrumpft mit.
+:root[data-theme="v1"] .game-end__confetti {
+    width: min(92vw, 80rem);
+    height: auto;
+}
+
 .game-end__figure {
     width: min(55vw, 16rem);
     height: auto;
@@ -24,20 +30,21 @@
 
 .game-end__lead {
     margin: 0;
-    font-size: 1.75rem;
+    font-size: clamp(1.2rem, 4vw, 1.75rem);
 }
 
 .game-end__player {
     margin: 0;
+    color: var(--color-player, #f58e39);
     font-family: $font-heading;
-    font-size: 2.75rem;
-    text-transform: lowercase;
+    font-size: clamp(1.9rem, 6vw, 2.75rem);
+    text-transform: uppercase;
 }
 
 .game-end__title {
     margin: 0;
     font-family: $font-heading;
-    font-size: 3.5rem;
+    font-size: clamp(2.25rem, 8vw, 3.5rem);
     line-height: 1;
 }
 
@@ -57,11 +64,11 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3.5vw, 1.5rem);
     text-transform: lowercase;
 }
 
 .game-end .button--back {
     margin-top: 1rem;
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3.5vw, 1.5rem);
 }
