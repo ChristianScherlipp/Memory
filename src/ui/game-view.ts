@@ -4,9 +4,14 @@
  * Elemente – so bleibt die Flip-Animation der Karten erhalten.
  */
 
-import { playerHex, renderGame, renderGameBar } from "./render";
+import { playerHex, renderGame, renderGameBar, renderGameEnd } from "./render";
 import type { Game } from "../core/game";
-import type { Card, GameSettings, GameState } from "../types";
+import type {
+  Card,
+  GameOutcome,
+  GameSettings,
+  GameState,
+} from "../types";
 
 /** Baut die komplette Spielansicht neu auf (bei Spielstart). */
 export function mountGame(
@@ -15,6 +20,16 @@ export function mountGame(
   settings: GameSettings,
 ): void {
   root.innerHTML = renderGame(game.getState(), settings, game.getWinner());
+}
+
+/** Baut den End-Screen zum ermittelten Ausgang der Partie auf. */
+export function mountGameEnd(
+  root: HTMLElement,
+  outcome: GameOutcome,
+  game: Game,
+  settings: GameSettings,
+): void {
+  root.innerHTML = renderGameEnd(outcome, game.getState(), settings);
 }
 
 /** Setzt die Karten-Klassen passend zum Zustand (Flip / Treffer). */

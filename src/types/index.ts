@@ -15,6 +15,9 @@ export type GameStatus = "idle" | "running" | "won";
 /** Kennung eines der beiden abwechselnd ziehenden Spieler. */
 export type PlayerId = 1 | 2;
 
+/** Ausgang einer beendeten Partie (Spieler 1 = wer die Farbe gewählt hat). */
+export type GameOutcome = "player-1-wins" | "player-2-wins" | "draw";
+
 /** Eine einzelne Spielkarte. */
 export interface Card {
   id: CardId;

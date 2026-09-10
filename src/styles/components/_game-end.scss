@@ -1,0 +1,61 @@
+// End-Screen: Sieg, Game Over und Unentschieden
+
+@use "../abstract/variables" as *;
+
+.game-end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    color: var(--color-text, #{$color-text});
+}
+
+.game-end__confetti {
+    width: min(70vw, 22rem);
+    height: auto;
+}
+
+.game-end__figure {
+    width: min(55vw, 16rem);
+    height: auto;
+}
+
+.game-end__lead {
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.game-end__player {
+    margin: 0;
+    font-family: $font-heading;
+    font-size: 2.75rem;
+    text-transform: lowercase;
+}
+
+.game-end__title {
+    margin: 0;
+    font-family: $font-heading;
+    font-size: 3.5rem;
+    line-height: 1;
+}
+
+.game-end__title--back {
+    color: var(--color-card-back-1, #{$color-card-back});
+}
+
+.game-end__scores {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.5rem;
+    text-transform: lowercase;
+}
+
+.game-end .button--back {
+    margin-top: 1rem;
+    font-size: 1.5rem;
+}

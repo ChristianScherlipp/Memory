@@ -17,6 +17,9 @@ export const CONTAINER_ID: string = "game-board";
 /** ID des DOM-Containers, in den das Einstellungsformular gerendert wird. */
 export const SETTINGS_CONTAINER_ID: string = "settings-form";
 
+/** ID des DOM-Containers, in den der End-Screen gerendert wird. */
+export const END_CONTAINER_ID: string = "game-end";
+
 /** ID des Buttons auf der Startseite, der zu den Einstellungen führt. */
 export const PLAY_BUTTON_ID: string = "play-button";
 
@@ -26,10 +29,14 @@ export const START_GAME_BUTTON_ID: string = "start-game-button";
 /** ID des Buttons, der das laufende Spiel verlässt. */
 export const EXIT_GAME_BUTTON_ID: string = "exit-game-button";
 
+/** ID des Buttons auf dem End-Screen zurück zur Startseite. */
+export const BACK_TO_START_BUTTON_ID: string = "back-to-start-button";
+
 /** IDs der `.page`-Sektionen in der gewünschten Reihenfolge. */
 export const START_PAGE_ID: string = "page-start";
 export const SETTINGS_PAGE_ID: string = "page-settings";
 export const GAME_PAGE_ID: string = "page-game";
+export const END_PAGE_ID: string = "page-end";
 
 /**
  * Verfügbare Kartensymbole (je eines pro Paar), genug für 6x6 (18 Paare).
@@ -43,6 +50,9 @@ export const CARD_SYMBOLS: readonly CardSymbol[] = Array.from(
 
 /** Basispfad der Kartenbilder unterhalb von `public/`. */
 export const CARD_IMAGE_BASE_PATH: string = "/assets/img/front";
+
+/** Basispfad der End-Screen-Bilder unterhalb von `public/`. */
+export const GAME_END_IMAGE_BASE_PATH: string = "/assets/img/game_end";
 
 /** Ordnername der Kartenbilder je Theme-Variante. */
 export const THEME_IMAGE_DIRS: Record<ThemeId, string> = {

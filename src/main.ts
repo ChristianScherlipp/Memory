@@ -7,25 +7,30 @@ import "./styles/main.scss";
 import { Game } from "./core/game";
 import { loadSettings, saveSettings } from "./core/settings-store";
 import {
+  BACK_TO_START_BUTTON_ID,
   BOARD_SIZES,
   CONTAINER_ID,
+  END_CONTAINER_ID,
+  END_PAGE_ID,
   EXIT_GAME_BUTTON_ID,
   FLIP_BACK_DELAY_MS,
   GAME_PAGE_ID,
   PLAY_BUTTON_ID,
   SETTINGS_CONTAINER_ID,
   SETTINGS_PAGE_ID,
+  START_PAGE_ID,
 } from "./config/settings";
 import { bindBoardEvents } from "./ui/events";
 import { requireElement } from "./ui/dom";
-import { mountGame, syncGame } from "./ui/game-view";
+import { mountGame, mountGameEnd, syncGame } from "./ui/game-view";
 import { bindNavButton, showPage } from "./ui/navigation";
 import { bindSettingsEvents, renderSettings } from "./ui/settings";
 import { applySettings } from "./ui/theme";
-import type { CardId, GameSettings } from "./types";
+import type { CardId, GameOutcome, GameSettings } from "./types";
 
 const CONTENT: HTMLElement = requireElement(CONTAINER_ID);
 const SETTINGS_ROOT: HTMLElement = requireElement(SETTINGS_CONTAINER_ID);
+const END_ROOT: HTMLElement = requireElement(END_CONTAINER_ID);
 
 let settings: GameSettings = loadSettings();
 let game: Game | undefined;
@@ -72,11 +77,29 @@ function exitGame(): void {
   showPage(SETTINGS_PAGE_ID);
 }
 
+/** Kehrt vom End-Screen zur Startseite zurück. */
+function backToStart(): void {
+  game = undefined;
+  boardMounted = false;
+  showPage(START_PAGE_ID);
+}
+
+/** Zeigt den End-Screen, sobald die Partie entschieden ist. */
+function maybeShowEnd(): void {
+  const outcome: GameOutcome | undefined = game?.getOutcome();
+  if (game === undefined || outcome === undefined) {
+    return;
+  }
+  mountGameEnd(END_ROOT, outcome, game, settings);
+  showPage(END_PAGE_ID);
+}
+
 /** Wertet einen abgeschlossenen Zug nach kurzer Verzögerung aus. */
 function scheduleTurnResolution(): void {
   window.setTimeout((): void => {
     game?.resolveTurn();
     draw();
+    maybeShowEnd();
   }, FLIP_BACK_DELAY_MS);
 }
 
@@ -92,12 +115,16 @@ function handleCardClick(id: CardId): void {
   }
 }
 
-/** Delegierter Klick-Handler für den Exit-Button der Spielleiste. */
-function bindExitButton(): void {
-  CONTENT.addEventListener("click", (event: MouseEvent): void => {
+/** Registriert einen delegierten Klick-Handler auf einen Button per ID. */
+function bindDelegatedButton(
+  root: HTMLElement,
+  buttonId: string,
+  onClick: () => void,
+): void {
+  root.addEventListener("click", (event: MouseEvent): void => {
     const target: EventTarget | null = event.target;
-    if (target instanceof HTMLElement && target.closest(`#${EXIT_GAME_BUTTON_ID}`)) {
-      exitGame();
+    if (target instanceof HTMLElement && target.closest(`#${buttonId}`)) {
+      onClick();
     }
   });
 }
@@ -109,7 +136,8 @@ function init(): void {
   bindNavButton(PLAY_BUTTON_ID, SETTINGS_PAGE_ID);
   bindSettingsEvents(SETTINGS_ROOT, (): GameSettings => settings, updateSettings, startGame);
   bindBoardEvents(CONTENT, handleCardClick);
-  bindExitButton();
+  bindDelegatedButton(CONTENT, EXIT_GAME_BUTTON_ID, exitGame);
+  bindDelegatedButton(END_ROOT, BACK_TO_START_BUTTON_ID, backToStart);
 }
 
 init();

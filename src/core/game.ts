@@ -3,7 +3,13 @@
  */
 
 import { createDeck } from "./board";
-import type { Card, CardId, GameState, PlayerId } from "../types";
+import type {
+  Card,
+  CardId,
+  GameOutcome,
+  GameState,
+  PlayerId,
+} from "../types";
 
 /** Anzahl gleichzeitig offener Karten, die ein Zug vergleicht. */
 const CARDS_PER_TURN: number = 2;
@@ -35,6 +41,18 @@ export class Game {
       return undefined;
     }
     return first > second ? 1 : 2;
+  }
+
+  /** Ausgang der Partie; `undefined`, solange noch nicht gewonnen. */
+  public getOutcome(): GameOutcome | undefined {
+    if (!this.isWon()) {
+      return undefined;
+    }
+    const winner: PlayerId | undefined = this.getWinner();
+    if (winner === undefined) {
+      return "draw";
+    }
+    return winner === 1 ? "player-1-wins" : "player-2-wins";
   }
 
   /** Startet eine neue Partie mit frisch gemischtem Deck. */

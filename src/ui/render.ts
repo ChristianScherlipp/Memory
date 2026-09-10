@@ -4,8 +4,10 @@
  */
 
 import {
+  BACK_TO_START_BUTTON_ID,
   CARD_IMAGE_BASE_PATH,
   EXIT_GAME_BUTTON_ID,
+  GAME_END_IMAGE_BASE_PATH,
   PLAYER_COLORS,
   THEME_IMAGE_DIRS,
   otherPlayerColor,
@@ -13,6 +15,7 @@ import {
 import type {
   BoardSize,
   Card,
+  GameOutcome,
   GameSettings,
   GameState,
   PlayerColor,
@@ -119,5 +122,78 @@ export function renderGame(
   return `
     ${renderGameBar(state, settings, winner)}
     ${renderBoard(state.cards, settings.boardSize, settings.theme, turnColor)}
+  `;
+}
+
+/** Pfad zu einem End-Screen-Bild in der gewählten Theme-Variante. */
+function endImageSrc(name: string, theme: ThemeId): string {
+  return `${GAME_END_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${name}.svg`;
+}
+
+/** Beschriftung eines Spielers, z. B. "orange player". */
+function colorWord(color: PlayerColor): string {
+  return `${color} player`;
+}
+
+/** Zurück-zur-Startseite-Button des End-Screens. */
+function renderBackButton(): string {
+  return `
+    <button class="button button--back" type="button" id="${BACK_TO_START_BUTTON_ID}">
+      Back to start
+    </button>
+  `;
+}
+
+/** Sieg-Ansicht (Spieler 1 hat gewonnen). */
+function renderWin(settings: GameSettings): string {
+  const color: PlayerColor = settings.playerColor;
+  return `
+    <img class="game-end__confetti" src="${endImageSrc("confetti", settings.theme)}" alt="">
+    <p class="game-end__lead">The winner is</p>
+    <p class="game-end__player">${colorWord(color)}</p>
+    <img class="game-end__figure" src="${endImageSrc(`player_${color}`, settings.theme)}" alt="">
+  `;
+}
+
+/** Game-Over-Ansicht (Spieler 2 hat gewonnen). */
+function renderGameOver(state: GameState, settings: GameSettings): string {
+  const one: PlayerColor = settings.playerColor;
+  const two: PlayerColor = otherPlayerColor(one);
+  return `
+    <p class="game-end__title game-end__title--back">game over</p>
+    <p class="game-end__lead">final score</p>
+    <ul class="game-end__scores">
+      <li>${colorWord(one)}: ${state.scores[1]}</li>
+      <li>${colorWord(two)}: ${state.scores[2]}</li>
+    </ul>
+  `;
+}
+
+/** Unentschieden-Ansicht. */
+function renderDraw(settings: GameSettings): string {
+  return `
+    <p class="game-end__lead">it's a</p>
+    <p class="game-end__title game-end__title--back">DRAW</p>
+    <img class="game-end__figure" src="${endImageSrc("draw", settings.theme)}" alt="">
+  `;
+}
+
+/** Vollständiges Markup des End-Screens je nach Ausgang der Partie. */
+export function renderGameEnd(
+  outcome: GameOutcome,
+  state: GameState,
+  settings: GameSettings,
+): string {
+  const body: string =
+    outcome === "player-1-wins"
+      ? renderWin(settings)
+      : outcome === "draw"
+        ? renderDraw(settings)
+        : renderGameOver(state, settings);
+  return `
+    <div class="game-end game-end--${outcome}">
+      ${body}
+      ${renderBackButton()}
+    </div>
   `;
 }
