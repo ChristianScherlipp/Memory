@@ -20,12 +20,24 @@
                 <span class="button__label">play</span>
                 <span class="button__icon button__icon--arrow" aria-hidden="true"></span>
             </button>
+            <button id="view-records-button" class="button button--records" type="button">
+                Records
+            </button>
         </section>
 
         <!-- Settings screen: player colour, board size, theme -->
         <section id="page-settings" class="page" tabindex="-1" hidden>
             <h1 class="page-settings__title">Settings</h1>
             <div id="settings-form"></div>
+        </section>
+
+        <!-- Records screen: best moves + time per board size -->
+        <section id="page-records" class="page" tabindex="-1" hidden>
+            <h1 class="page-records__title">Records</h1>
+            <div id="records-list"></div>
+            <button id="back-from-records-button" class="button button--back-records" type="button">
+                Back to start
+            </button>
         </section>
 
         <!-- Game screen: status bar + board are rendered into #game-board -->

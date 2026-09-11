@@ -3,11 +3,13 @@
  */
 
 import { createDeck } from "./board";
+import { playerIds } from "../config/settings";
 import type {
   Card,
   CardId,
   GameOutcome,
   GameState,
+  PlayerCount,
   PlayerId,
 } from "../types";
 
@@ -18,9 +20,11 @@ const CARDS_PER_TURN: number = 2;
 export class Game {
   private state: GameState;
   private readonly pairCount: number;
+  private readonly playerCount: PlayerCount;
 
-  constructor(pairCount: number) {
+  constructor(pairCount: number, playerCount: PlayerCount) {
     this.pairCount = pairCount;
+    this.playerCount = playerCount;
     this.state = Game.createInitialState(pairCount);
   }
 
@@ -36,11 +40,13 @@ export class Game {
 
   /** Sieger der beendeten Partie; `undefined` bei Gleichstand oder laufendem Spiel. */
   public getWinner(): PlayerId | undefined {
-    const [first, second] = [this.state.scores[1], this.state.scores[2]];
-    if (!this.isWon() || first === second) {
+    if (!this.isWon()) {
       return undefined;
     }
-    return first > second ? 1 : 2;
+    const active: readonly PlayerId[] = playerIds(this.playerCount);
+    const topScore: number = Math.max(...active.map((p: PlayerId): number => this.state.scores[p]));
+    const leaders: PlayerId[] = active.filter((p: PlayerId): boolean => this.state.scores[p] === topScore);
+    return leaders.length === 1 ? leaders[0] : undefined;
   }
 
   /** Ausgang der Partie; `undefined`, solange noch nicht gewonnen. */
@@ -49,10 +55,7 @@ export class Game {
       return undefined;
     }
     const winner: PlayerId | undefined = this.getWinner();
-    if (winner === undefined) {
-      return "draw";
-    }
-    return winner === 1 ? "player-1-wins" : "player-2-wins";
+    return winner === undefined ? { kind: "draw" } : { kind: "win", winner };
   }
 
   /** Startet eine neue Partie mit frisch gemischtem Deck. */
@@ -98,9 +101,9 @@ export class Game {
     this.updateStatus();
   }
 
-  /** Wechselt das Zugrecht zum jeweils anderen Spieler. */
+  /** Wechselt das Zugrecht reihum zum nächsten Spieler. */
   private switchPlayer(): void {
-    this.state.currentPlayer = this.state.currentPlayer === 1 ? 2 : 1;
+    this.state.currentPlayer = ((this.state.currentPlayer % this.playerCount) + 1) as PlayerId;
   }
 
   /** Ob aktuell auf die Auswertung eines Zuges gewartet wird. */
@@ -116,7 +119,7 @@ export class Game {
       moves: 0,
       matchedPairs: 0,
       currentPlayer: 1,
-      scores: { 1: 0, 2: 0 },
+      scores: { 1: 0, 2: 0, 3: 0, 4: 0 },
     };
   }
 

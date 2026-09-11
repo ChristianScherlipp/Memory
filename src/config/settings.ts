@@ -8,6 +8,8 @@ import type {
   CardSymbol,
   GameSettings,
   PlayerColor,
+  PlayerCount,
+  PlayerId,
   ThemeId,
 } from "../types";
 
@@ -41,11 +43,21 @@ export const EXIT_CANCEL_BUTTON_ID: string = "exit-cancel-button";
 /** ID des Buttons auf dem End-Screen zurück zur Startseite. */
 export const BACK_TO_START_BUTTON_ID: string = "back-to-start-button";
 
+/** ID des Buttons auf der Startseite, der zur Rekordliste führt. */
+export const VIEW_RECORDS_BUTTON_ID: string = "view-records-button";
+
+/** ID des Buttons auf der Rekordseite zurück zur Startseite. */
+export const BACK_FROM_RECORDS_BUTTON_ID: string = "back-from-records-button";
+
+/** ID des DOM-Containers, in den die Rekordliste gerendert wird. */
+export const RECORDS_CONTAINER_ID: string = "records-list";
+
 /** IDs der `.page`-Sektionen in der gewünschten Reihenfolge. */
 export const START_PAGE_ID: string = "page-start";
 export const SETTINGS_PAGE_ID: string = "page-settings";
 export const GAME_PAGE_ID: string = "page-game";
 export const END_PAGE_ID: string = "page-end";
+export const RECORDS_PAGE_ID: string = "page-records";
 
 /**
  * Verfügbare Kartensymbole (je eines pro Paar), genug für 6x6 (18 Paare).
@@ -117,11 +129,44 @@ export const BOARD_SIZES: Record<
 export const PLAYER_COLORS: Record<PlayerColor, string> = {
   orange: "#f58e39",
   blue: "#2bb1ff",
+  green: "#3ecf6e",
+  red: "#ff5c5c",
 };
 
-/** Farbe des jeweils anderen Spielers (Spieler 2 erhält die freie Farbe). */
-export function otherPlayerColor(color: PlayerColor): PlayerColor {
-  return color === "orange" ? "blue" : "orange";
+/** Feste Reihenfolge, in der die übrigen Spieler ihre Farbe erhalten. */
+export const COLOR_ORDER: readonly PlayerColor[] = ["orange", "blue", "green", "red"];
+
+/** Farben, für die themenspezifische Sieg-/Scoreboard-Grafiken existieren. */
+export const THEMED_PLAYER_COLORS: readonly PlayerColor[] = ["orange", "blue"];
+
+/** Ob für `color` eine themenspezifische Grafik existiert (sonst generischer Fallback). */
+export function hasThemedFigure(color: PlayerColor): boolean {
+  return THEMED_PLAYER_COLORS.includes(color);
+}
+
+/** Wählbare Spieleranzahlen. */
+export const PLAYER_COUNTS: readonly PlayerCount[] = [2, 3, 4];
+
+/** IDs der aktiven Spieler einer Partie, in Zugreihenfolge. */
+export function playerIds(count: PlayerCount): readonly PlayerId[] {
+  return Array.from({ length: count }, (_unused: unknown, index: number): PlayerId => (index + 1) as PlayerId);
+}
+
+/**
+ * Ordnet jedem Spieler eine Farbe zu: Spieler 1 bekommt `primary`, die
+ * übrigen die restlichen Farben aus `COLOR_ORDER` in fester Reihenfolge.
+ */
+export function assignPlayerColors(
+  primary: PlayerColor,
+  count: PlayerCount,
+): Record<PlayerId, PlayerColor> {
+  const rest: PlayerColor[] = COLOR_ORDER.filter((color: PlayerColor): boolean => color !== primary);
+  const colors: readonly PlayerColor[] = [primary, ...rest];
+  const result: Record<PlayerId, PlayerColor> = { 1: primary, 2: primary, 3: primary, 4: primary };
+  playerIds(count).forEach((player: PlayerId, index: number): void => {
+    result[player] = colors[index];
+  });
+  return result;
 }
 
 /** Alle wählbaren Theme-Varianten. */
@@ -130,12 +175,22 @@ export const THEME_IDS: readonly ThemeId[] = ["v1", "v2", "v3", "v4"];
 /** Standard-Auswahl, falls nichts gespeichert oder Gespeichertes ungültig ist. */
 export const DEFAULT_SETTINGS: GameSettings = {
   playerColor: "orange",
+  playerCount: 2,
   boardSize: "4x4",
   theme: "v1",
 };
 
 /** localStorage-Schlüssel für die persistierte Auswahl. */
 export const SETTINGS_STORAGE_KEY: string = "memory:settings";
+
+/** localStorage-Schlüssel für die persistierten Rekorde je Spielfeldgröße. */
+export const RECORDS_STORAGE_KEY: string = "memory:records";
+
+/** Millisekunden je Sekunde – für die Umrechnung der Rekordzeit. */
+export const MS_PER_SECOND: number = 1000;
+
+/** Sekunden je Minute – für die Umrechnung der Rekordzeit. */
+export const SECONDS_PER_MINUTE: number = 60;
 
 /** Verzögerung (ms), bevor ein nicht passendes Paar wieder zugedeckt wird. */
 export const FLIP_BACK_DELAY_MS: number = 900;

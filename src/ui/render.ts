@@ -13,7 +13,9 @@ import {
   THEME_IMAGE_DIRS,
   THEME_WIN_ASSETS,
   assetUrl,
-  otherPlayerColor,
+  assignPlayerColors,
+  hasThemedFigure,
+  playerIds,
 } from "../config/settings";
 import type {
   Card,
@@ -30,9 +32,9 @@ function cardImageSrc(symbol: string, theme: ThemeId): string {
   return assetUrl(`${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`);
 }
 
-/** Farbe eines Spielers: Spieler 1 wählt, Spieler 2 bekommt den Rest. */
+/** Farbe eines Spielers: Spieler 1 wählt, die übrigen bekommen die restlichen Farben. */
 export function playerColor(player: PlayerId, settings: GameSettings): PlayerColor {
-  return player === 1 ? settings.playerColor : otherPlayerColor(settings.playerColor);
+  return assignPlayerColors(settings.playerColor, settings.playerCount)[player];
 }
 
 /** Farbe (Hex) eines Spielers: Spieler 1 wählt, Spieler 2 bekommt den Rest. */
@@ -46,17 +48,18 @@ function capitalizedColorWord(color: PlayerColor): string {
 }
 
 /**
- * Bildquelle des Spieler-Icons je Theme: Variante 1 nutzt das generische,
- * einfarbige `player_icon.svg` (eingefärbt über die Spielerfarbe), die
- * anderen Varianten die farbigen Sieg-Bilder aus dem `game_end`-Ordner
- * des jeweiligen Themes. `v2` (games_theme_cards) hat keine eigenen
- * Spielerbilder und nutzt daher die von `v1` (code_vibes_theme).
+ * Bildquelle einer Spielerfigur je Theme: Variante 1 sowie jede Farbe ohne
+ * eigene Theme-Grafik (aktuell Grün/Rot) nutzen das generische, einfarbige
+ * `player_icon.svg` (eingefärbt über die Spielerfarbe); Orange/Blau nutzen
+ * ab Theme v2 die farbigen Bilder aus dem `game_end`-Ordner des jeweiligen
+ * Themes. `v2` (games_theme_cards) hat keine eigenen Spielerbilder und
+ * nutzt daher die von `v1` (code_vibes_theme).
  */
-function scoreboardIcon(
+function figureSource(
   color: PlayerColor,
   theme: ThemeId,
 ): { readonly src: string; readonly generic: boolean } {
-  if (theme === "v1") {
+  if (theme === "v1" || !hasThemedFigure(color)) {
     return { src: assetUrl(`${GAME_ICON_BASE_PATH}/player_icon.svg`), generic: true };
   }
   const sourceTheme: ThemeId = theme === "v2" ? "v1" : theme;
@@ -64,16 +67,30 @@ function scoreboardIcon(
 }
 
 /**
- * Markup des Spieler-Icons. Das generische Icon (Variante 1) ist weiß und
- * wird per CSS-Maske in der Spielerfarbe eingefärbt; die Theme-Bilder
- * bringen ihre Farbe bereits mit und werden als normales `<img>` genutzt.
+ * Markup einer Spielerfigur (Scoreboard-Icon oder großes Sieg-Bild). Das
+ * generische Icon ist weiß und wird per CSS-Maske in der Spielerfarbe
+ * eingefärbt; Theme-Bilder bringen ihre Farbe bereits mit und werden als
+ * normales `<img>` genutzt. `alt` bleibt leer für rein dekorative Nutzung.
  */
-function renderScoreboardIcon(color: PlayerColor, theme: ThemeId, hex: string): string {
-  const icon: { readonly src: string; readonly generic: boolean } = scoreboardIcon(color, theme);
-  if (icon.generic) {
-    return `<span class="scoreboard__icon scoreboard__icon--tinted" style="background-color: ${hex}; -webkit-mask-image: url('${icon.src}'); mask-image: url('${icon.src}')"></span>`;
+function renderPlayerFigure(
+  color: PlayerColor,
+  theme: ThemeId,
+  hex: string,
+  className: string,
+  alt: string,
+): string {
+  const figure: { readonly src: string; readonly generic: boolean } = figureSource(color, theme);
+  if (!figure.generic) {
+    return `<img class="${className}" src="${figure.src}" alt="${alt}">`;
   }
-  return `<img class="scoreboard__icon" src="${icon.src}" alt="">`;
+  const label: string = alt === "" ? ` aria-hidden="true"` : ` role="img" aria-label="${alt}"`;
+  const style: string = `background-color: ${hex}; -webkit-mask-image: url('${figure.src}'); mask-image: url('${figure.src}')`;
+  return `<span class="${className} icon--tinted" style="${style}"${label}></span>`;
+}
+
+/** Markup des Spieler-Icons in der Punkteanzeige (dekorativ, rein farblich). */
+function renderScoreboardIcon(color: PlayerColor, theme: ThemeId, hex: string): string {
+  return renderPlayerFigure(color, theme, hex, "scoreboard__icon", "");
 }
 
 /** Sichtbarer alt-Text einer aufgedeckten Karte ("Motif 3"). */
@@ -168,12 +185,12 @@ export function renderGameBar(
   settings: GameSettings,
   winner: PlayerId | undefined,
 ): string {
+  const players: string = playerIds(settings.playerCount)
+    .map((player: PlayerId): string => renderPlayer(player, state, settings))
+    .join("");
   return `
     <header class="game-bar">
-      <ul class="scoreboard">
-        ${renderPlayer(1, state, settings)}
-        ${renderPlayer(2, state, settings)}
-      </ul>
+      <ul class="scoreboard">${players}</ul>
       ${renderTurnLine(state, settings, winner)}
       <button class="button button--exit" type="button" id="${EXIT_GAME_BUTTON_ID}">
         <span class="game-bar__exit-icon" aria-hidden="true"></span>
@@ -217,20 +234,18 @@ function renderBackButton(): string {
   `;
 }
 
-/** Dateiname und alt-Text des Sieg-Bilds je nach Theme. */
-function winFigure(settings: GameSettings): { name: string; alt: string } {
+/** Markup des Sieg-Bilds: Pokal (immer Theme-Bild) oder Spielerfigur (Theme-Bild/generisches Icon). */
+function renderWinFigure(settings: GameSettings): string {
   if (THEME_WIN_ASSETS[settings.theme].figure === "trophy") {
-    return { name: "winnerpokal", alt: "Winner's trophy" };
+    return `<img class="game-end__figure" src="${endImageSrc("winnerpokal", settings.theme)}" alt="Winner's trophy">`;
   }
-  return {
-    name: `player_${settings.playerColor}`,
-    alt: `${colorWord(settings.playerColor)} wins`,
-  };
+  const hex: string = playerHex(1, settings);
+  const alt: string = `${colorWord(settings.playerColor)} wins`;
+  return renderPlayerFigure(settings.playerColor, settings.theme, hex, "game-end__figure", alt);
 }
 
 /** Sieg-Ansicht (Spieler 1 hat gewonnen). */
 function renderWin(settings: GameSettings): string {
-  const figure: { name: string; alt: string } = winFigure(settings);
   const confetti: string = THEME_WIN_ASSETS[settings.theme].confetti
     ? `<img class="game-end__confetti" src="${endImageSrc("confetti", settings.theme)}" alt="">`
     : "";
@@ -238,30 +253,37 @@ function renderWin(settings: GameSettings): string {
     ${confetti}
     <p class="game-end__lead">The winner is</p>
     <h1 class="game-end__player">${colorWord(settings.playerColor)}</h1>
-    <img class="game-end__figure" src="${endImageSrc(figure.name, settings.theme)}" alt="${figure.alt}">
+    ${renderWinFigure(settings)}
   `;
 }
 
-/** Game-Over-Ansicht (Spieler 2 hat gewonnen). */
-function renderGameOver(state: GameState, settings: GameSettings): string {
-  const one: PlayerColor = settings.playerColor;
-  const two: PlayerColor = otherPlayerColor(one);
+/** Markup der Endstand-Liste aller aktiven Spieler. */
+function renderScoreList(state: GameState, settings: GameSettings): string {
+  const rows: string = playerIds(settings.playerCount)
+    .map((player: PlayerId): string =>
+      `<li>${colorWord(playerColor(player, settings))}: ${state.scores[player]}</li>`,
+    )
+    .join("");
+  return `<ul class="game-end__scores">${rows}</ul>`;
+}
+
+/** Game-Over-Ansicht (ein anderer Spieler als Spieler 1 hat gewonnen). */
+function renderGameOver(winner: PlayerId, state: GameState, settings: GameSettings): string {
   return `
     <h1 class="game-end__title game-end__title--back">game over</h1>
+    <p class="game-end__lead">${colorWord(playerColor(winner, settings))} wins</p>
     <p class="game-end__lead">final score</p>
-    <ul class="game-end__scores">
-      <li>${colorWord(one)}: ${state.scores[1]}</li>
-      <li>${colorWord(two)}: ${state.scores[2]}</li>
-    </ul>
+    ${renderScoreList(state, settings)}
   `;
 }
 
 /** Unentschieden-Ansicht. */
-function renderDraw(settings: GameSettings): string {
+function renderDraw(state: GameState, settings: GameSettings): string {
   return `
     <p class="game-end__lead">it's a</p>
     <h1 class="game-end__title game-end__title--back"><strong>DRAW</strong></h1>
     <img class="game-end__figure" src="${endImageSrc("draw", settings.theme)}" alt="It's a draw">
+    ${renderScoreList(state, settings)}
   `;
 }
 
@@ -271,14 +293,17 @@ function renderGameEndBody(
   state: GameState,
   settings: GameSettings,
 ): string {
-  switch (outcome) {
-    case "player-1-wins":
-      return renderWin(settings);
-    case "player-2-wins":
-      return renderGameOver(state, settings);
-    case "draw":
-      return renderDraw(settings);
+  if (outcome.kind === "draw") {
+    return renderDraw(state, settings);
   }
+  return outcome.winner === 1
+    ? renderWin(settings)
+    : renderGameOver(outcome.winner, state, settings);
+}
+
+/** CSS-Modifier für den End-Screen, abgeleitet vom Ausgang. */
+function outcomeModifier(outcome: GameOutcome): string {
+  return outcome.kind === "draw" ? "draw" : `win-${outcome.winner}`;
 }
 
 /** Vollständiges Markup des End-Screens je nach Ausgang der Partie. */
@@ -289,7 +314,7 @@ export function renderGameEnd(
 ): string {
   const body: string = renderGameEndBody(outcome, state, settings);
   return `
-    <div class="game-end game-end--${outcome}">
+    <div class="game-end game-end--${outcomeModifier(outcome)}">
       ${body}
       ${renderBackButton()}
     </div>

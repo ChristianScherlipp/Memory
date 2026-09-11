@@ -25,6 +25,19 @@
     &:active {
         transform: scale(0.97);
     }
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+
+        &:hover {
+            filter: none;
+        }
+
+        &:active {
+            transform: none;
+        }
+    }
 }
 
 .button__icon {
@@ -51,7 +64,9 @@
 .button--play,
 .button--start,
 .button--continue,
-.button--exit {
+.button--exit,
+.button--records,
+.button--back-records {
     background-color: transparent;
     border: 2px solid var(--color-card-back-1, #{$color-card-back});
     color: var(--color-card-back-1, #{$color-card-back});

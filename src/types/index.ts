@@ -12,11 +12,19 @@ export type CardSymbol = string;
 /** Aktueller Status einer Spielpartie. */
 export type GameStatus = "idle" | "running" | "won";
 
-/** Kennung eines der beiden abwechselnd ziehenden Spieler. */
-export type PlayerId = 1 | 2;
+/** Kennung eines der abwechselnd ziehenden Spieler. */
+export type PlayerId = 1 | 2 | 3 | 4;
 
-/** Ausgang einer beendeten Partie (Spieler 1 = wer die Farbe gewählt hat). */
-export type GameOutcome = "player-1-wins" | "player-2-wins" | "draw";
+/** Anzahl der an einer Partie beteiligten Spieler. */
+export type PlayerCount = 2 | 3 | 4;
+
+/**
+ * Ausgang einer beendeten Partie: entweder ein eindeutiger Sieger oder ein
+ * Unentschieden (mehrere Spieler mit demselben Höchststand).
+ */
+export type GameOutcome =
+  | { readonly kind: "draw" }
+  | { readonly kind: "win"; readonly winner: PlayerId };
 
 /** Eine einzelne Spielkarte. */
 export interface Card {
@@ -39,7 +47,7 @@ export interface GameState {
 }
 
 /** Wählbare Spielerfarbe. */
-export type PlayerColor = "orange" | "blue";
+export type PlayerColor = "orange" | "blue" | "green" | "red";
 
 /** Wählbare Spielfeldgröße (Spalten × Zeilen der Beschreibung nach). */
 export type BoardSize = "4x4" | "4x6" | "6x6";
@@ -47,9 +55,23 @@ export type BoardSize = "4x4" | "4x6" | "6x6";
 /** Kennung einer der optischen Theme-Varianten. */
 export type ThemeId = "v1" | "v2" | "v3" | "v4";
 
-/** Vom Nutzer getroffene Auswahl vor Spielbeginn. */
+/** Vom Nutzer getroffene, vollständige Auswahl vor Spielbeginn. */
 export interface GameSettings {
   playerColor: PlayerColor;
+  playerCount: PlayerCount;
   boardSize: BoardSize;
   theme: ThemeId;
+}
+
+/**
+ * Auswahl während des Einstellungsformulars – jedes Feld ist erst gesetzt,
+ * sobald der Nutzer die jeweilige Kategorie angeklickt hat.
+ */
+export type SettingsDraft = Partial<GameSettings>;
+
+/** Bestleistung einer Spielfeldgröße: Zugzahl, Dauer und Datum der Partie. */
+export interface RecordEntry {
+  moves: number;
+  timeMs: number;
+  date: string;
 }

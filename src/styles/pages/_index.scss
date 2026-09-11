@@ -52,9 +52,44 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.page-settings__title {
+.page-settings__title,
+.page-records__title {
     color: var(--color-text, #{$color-text});
     font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+// ---- Rekordliste ----
+
+.records {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 28rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.records__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.1rem;
+    border-radius: 0.85rem;
+    background: rgba(127, 127, 127, 0.12);
+    color: var(--color-text, #{$color-text});
+    font-family: var(--font-body, #{$font-body});
+    font-size: clamp(1rem, 3vw, 1.2rem);
+}
+
+.records__label {
+    font-weight: 700;
+}
+
+.records__empty {
+    opacity: 0.65;
 }
 
 .status {
@@ -190,15 +225,57 @@
     &[data-color="blue"] {
         background-color: #2bb1ff;
     }
+
+    &[data-color="green"] {
+        background-color: #3ecf6e;
+    }
+
+    &[data-color="red"] {
+        background-color: #ff5c5c;
+    }
+}
+
+// Positionspfeil neben dem Wort: sichtbar beim Hover über die Option und
+// dauerhaft, sobald diese Option ausgewählt ist (auch bei Hover auf andere).
+.option__hover-icon {
+    flex: none;
+    width: 1.05rem;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.option:hover .option__hover-icon,
+.option__input:checked ~ .option__hover-icon {
+    opacity: 1;
+}
+
+// Hover-Effekt zusätzlich auf dem Radio-Kreis und dem Wort selbst.
+.option:hover .option__mark {
+    border-color: var(--color-player, #f58e39);
+}
+
+.option:hover .option__label {
+    font-weight: 700;
 }
 
 // ---- Live-Vorschau ----
 
-.settings__preview {
+// Rechte Spalte: Vorschau plus Start-Button darunter.
+.settings__preview-column {
     position: sticky;
     top: 2rem;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.settings__preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .preview-board {
@@ -243,6 +320,27 @@
     object-fit: cover;
 }
 
+// Wörter unter der Vorschau: Platzhalter je Kategorie, ersetzt durch die
+// gewählte Option, getrennt durch `divider_line.svg`.
+.settings__preview-caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 1rem 0 0;
+    color: var(--color-text, #{$color-text});
+    font-family: var(--font-heading, #{$font-heading});
+    font-size: clamp(1rem, 2.6vw, 1.25rem);
+    text-align: center;
+}
+
+.settings__preview-divider {
+    flex: none;
+    width: auto;
+    height: 1.1em;
+}
+
 @keyframes option-pop {
     from {
         transform: scale(0);
@@ -270,7 +368,7 @@
         max-width: 30rem;
     }
 
-    .settings__preview {
+    .settings__preview-column {
         position: static;
         order: -1;
         width: 100%;

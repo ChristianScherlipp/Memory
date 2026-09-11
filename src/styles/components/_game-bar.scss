@@ -83,7 +83,10 @@
     object-fit: contain;
 }
 
-.scoreboard__icon--tinted {
+// Generisches, per Maske eingefärbtes Spieler-Icon – genutzt vom kleinen
+// Scoreboard-Icon (hier) und vom großen Sieg-Bild (`.game-end__figure`)
+// als Fallback für Farben ohne eigene Theme-Grafik.
+.icon--tinted {
     display: inline-block;
     mask-repeat: no-repeat;
     mask-position: center;

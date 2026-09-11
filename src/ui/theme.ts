@@ -3,11 +3,15 @@
  * Die konkreten Farben/Spalten setzt daraufhin das CSS.
  */
 
-import type { GameSettings } from "../types";
+import { DEFAULT_SETTINGS } from "../config/settings";
+import type { SettingsDraft } from "../types";
 
-/** Setzt `data-theme` und `data-player` auf dem Wurzelelement. */
-export function applySettings(settings: GameSettings): void {
+/**
+ * Setzt `data-theme` und `data-player` auf dem Wurzelelement – rein optisch,
+ * daher mit Fallback auf die Standardwerte, solange noch keine Auswahl steht.
+ */
+export function applySettings(settings: SettingsDraft): void {
   const root: HTMLElement = document.documentElement;
-  root.dataset.theme = settings.theme;
-  root.dataset.player = settings.playerColor;
+  root.dataset.theme = settings.theme ?? DEFAULT_SETTINGS.theme;
+  root.dataset.player = settings.playerColor ?? DEFAULT_SETTINGS.playerColor;
 }
