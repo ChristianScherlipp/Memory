@@ -50,11 +50,28 @@
     font-display: swap;
 }
 
+// Schriftart des food_theme (v4) – siehe THEME_FONTS in themes/_variants.scss.
+@font-face {
+    font-family: "Klee One";
+    src: url("/assets/fonts/KleeOne-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Klee One";
+    src: url("/assets/fonts/KleeOne-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
 body {
-    font-family: $font-body;
+    font-family: var(--font-body, #{$font-body});
 }
 
 h1,
 h2 {
-    font-family: $font-heading;
+    font-family: var(--font-heading, #{$font-heading});
 }

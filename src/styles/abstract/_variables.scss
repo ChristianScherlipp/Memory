@@ -11,3 +11,6 @@ $color-text-two: black;
 // Schriftfamilien
 $font-heading: "Red Rose";
 $font-body: "Almarai";
+
+// Seitliches Mindest-Gutter der `.page`-Sektionen (>= 16px, skaliert bis 1440px).
+$page-gutter: clamp(1rem, 5vw, 3rem);

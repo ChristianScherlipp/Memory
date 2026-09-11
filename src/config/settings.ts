@@ -66,6 +66,9 @@ export const GAME_END_IMAGE_BASE_PATH: string = "assets/img/game_end";
 /** Basispfad der Kategorie-Icons im Einstellungsformular (ohne führenden Slash). */
 export const SETTINGS_ICON_BASE_PATH: string = "assets/img/settings";
 
+/** Basispfad der Spielleisten-Icons (Exit-Button, generisches Spieler-Icon). */
+export const GAME_ICON_BASE_PATH: string = "assets/icons/game_icons";
+
 /**
  * Stellt den in `vite.config.ts` gesetzten `base`-Pfad voran.
  * `import.meta.env.BASE_URL` ist im Dev `/` und im Build z. B. `/Memory/dist/`,

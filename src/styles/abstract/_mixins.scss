@@ -1,1 +1,9 @@
 // Wiederverwendbare Mixins – kein CSS-Output
+
+// Färbt ein einfarbiges SVG-Icon über eine CSS-Maske in `currentcolor` ein,
+// statt es fest im Bild zu verdrahten (z. B. für theme-abhängige Icons).
+@mixin icon-mask($url) {
+    background-color: currentcolor;
+    mask: url($url) no-repeat center / contain;
+    -webkit-mask: url($url) no-repeat center / contain;
+}

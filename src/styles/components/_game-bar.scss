@@ -1,23 +1,44 @@
 // Spielleiste über dem Brett: Punktestand, Spieler am Zug, Exit-Button
 
 @use "../abstract/variables" as *;
+@use "../abstract/mixins" as *;
 
 #game-board {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(0.75rem, 3vw, 1.25rem);
     width: 100%;
+    min-height: 100vh;
 }
 
+// Trägt das Brett unterhalb der fixen Spielleiste und zentriert es im
+// verbleibenden Platz (statt der ganzen Seite wie vor der Spielleiste).
+.game-board__content {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-block: clamp(0.75rem, 3vw, 1.25rem);
+}
+
+// Spielleiste: bleibt beim Scrollen oben und reicht – losgelöst vom
+// Seiten-Gutter – bis an den Rand des 1440px-Layouts (`#app`).
 .game-bar {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 10;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem 1.5rem;
-    width: 100%;
-    max-width: 40rem;
+    width: calc(100% + #{$page-gutter} * 2);
+    margin-inline: calc(-1 * #{$page-gutter});
+    padding: 0.85rem $page-gutter;
+    background-color: var(--color-bg, #{$color-background});
+    border-radius: 0 0 1.25rem 1.25rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
 .scoreboard {
@@ -45,21 +66,55 @@
     font-weight: 700;
 }
 
-.scoreboard__swatch {
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+// food_theme (v4): Klee One wirkt optisch größer als die Standardschrift –
+// die Pillen um Punktestand/Exit-Button enger fassen, Schrift bleibt gleich.
+:root[data-theme="v4"] .scoreboard__player {
+    padding: 0.25rem 0.6rem;
+}
+
+:root[data-theme="v4"] .button--exit {
+    padding: 0.35rem 0.85rem;
+}
+
+.scoreboard__icon {
+    flex: none;
+    width: clamp(1.5rem, 4vw, 2.25rem);
+    height: clamp(1.5rem, 4vw, 2.25rem);
+    object-fit: contain;
+}
+
+.scoreboard__icon--tinted {
+    display: inline-block;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
 }
 
 .game-bar__turn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0;
     color: var(--color-text, #{$color-text});
     font-size: clamp(1rem, 3vw, 1.25rem);
 }
 
+// Größe des Exit-Buttons in der Spielleiste; die Theme-Farbe kommt aus dem
+// gemeinsamen `.button--exit`-Rahmen in components/_button.scss.
 .button--exit {
     gap: 0.5rem;
     padding: 0.5rem 1.25rem;
     font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+// Exit-Icon: einfarbiges SVG, per Maske in der Textfarbe des Buttons eingefärbt.
+.game-bar__exit-icon {
+    display: inline-block;
+    flex: none;
+    width: 1rem;
+    height: 0.82rem;
+    @include icon-mask("/assets/icons/game_icons/exit.svg");
 }

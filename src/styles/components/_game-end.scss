@@ -36,14 +36,14 @@
 .game-end__player {
     margin: 0;
     color: var(--color-player, #f58e39);
-    font-family: $font-heading;
+    font-family: var(--font-heading, #{$font-heading});
     font-size: clamp(1.9rem, 6vw, 2.75rem);
     text-transform: uppercase;
 }
 
 .game-end__title {
     margin: 0;
-    font-family: $font-heading;
+    font-family: var(--font-heading, #{$font-heading});
     font-size: clamp(2.25rem, 8vw, 3.5rem);
     line-height: 1;
 }

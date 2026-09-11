@@ -16,9 +16,9 @@
                 <h1 class="page-start__title">Ready to play?</h1>
             </div>
             <button id="play-button" class="button button--play" type="button">
-                <img class="button__icon" src="./assets/icons/controller.svg" alt="">
+                <span class="button__icon button__icon--controller" aria-hidden="true"></span>
                 <span class="button__label">play</span>
-                <img class="button__icon" src="./assets/icons/arrow_right.svg" alt="">
+                <span class="button__icon button__icon--arrow" aria-hidden="true"></span>
             </button>
         </section>
 
@@ -37,7 +37,7 @@
                     <h2 id="exit-dialog-title" class="modal__title">Leave the game?</h2>
                     <p class="modal__text">Your current progress will be lost.</p>
                     <div class="modal__actions">
-                        <button type="button" id="exit-cancel-button" class="button">
+                        <button type="button" id="exit-cancel-button" class="button button--continue">
                             Continue game
                         </button>
                         <button type="button" id="exit-confirm-button" class="button button--exit">

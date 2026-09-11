@@ -10,6 +10,8 @@
     --color-card-back-1: #{$color-card-back};
     --color-card-back-2: #{$color-background};
     --color-player: #f58e39;
+    --font-heading: #{$font-heading};
+    --font-body: #{$font-body};
 }
 
 // Variante 1 – Hintergrund = Primärfarbe, Rückseite Türkis-Verlauf
@@ -34,12 +36,14 @@
     --color-card-back-2: #ffffff;
 }
 
-// Variante 4 – heller Hintergrund, Rückseite Orange → Weiß
+// Variante 4 – heller Hintergrund, Rückseite Orange → Weiß, Schrift Klee One
 :root[data-theme="v4"] {
     --color-bg: #e8e2dc;
     --color-text: #1a1a1a;
     --color-card-back-1: #f3832d;
     --color-card-back-2: #ffffff;
+    --font-heading: "Klee One";
+    --font-body: "Klee One";
 }
 
 // Spielerfarbe – nur der Rahmen aufgedeckter Karten

@@ -173,7 +173,7 @@ export function renderSettings(current: GameSettings): string {
     <form class="settings">
       <div class="settings__form">
         ${groups}
-        <button class="button" type="button" id="${START_GAME_BUTTON_ID}">
+        <button class="button button--start" type="button" id="${START_GAME_BUTTON_ID}">
           Start game
         </button>
       </div>

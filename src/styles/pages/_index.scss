@@ -12,8 +12,7 @@
     gap: clamp(1rem, 3vw, 1.5rem);
     width: 100%;
     min-height: 100vh;
-    // Seitliches Mindest-Gutter (>= 16px), skaliert bis 320–1440px.
-    padding-inline: clamp(1rem, 5vw, 3rem);
+    padding-inline: $page-gutter;
     text-align: center;
 
     &[hidden] {
@@ -24,6 +23,12 @@
     &:focus {
         outline: none;
     }
+}
+
+// Spielseite: Spielleiste sitzt fix am oberen Rand, das Brett wird darunter
+// zentriert – daher hier kein `justify-content: center` über die ganze Seite.
+#page-game {
+    justify-content: flex-start;
 }
 
 .page-start__heading {
@@ -89,7 +94,7 @@
     align-items: center;
     gap: 0.6rem;
     color: var(--color-text, #{$color-text});
-    font-family: $font-heading;
+    font-family: var(--font-heading, #{$font-heading});
     font-size: clamp(1.3rem, 3.5vw, 1.6rem);
 }
 
@@ -114,7 +119,7 @@
     padding: 0.35rem 0.6rem;
     border-radius: 0.6rem;
     color: var(--color-text, #{$color-text});
-    font-family: $font-body;
+    font-family: var(--font-body, #{$font-body});
     font-size: clamp(1rem, 3vw, 1.15rem);
     cursor: pointer;
     white-space: nowrap;
@@ -128,6 +133,12 @@
 .option--active {
     font-weight: 700;
     transform: translateX(0.2rem);
+}
+
+// food_theme (v4): Klee One wirkt optisch größer als die Standardschrift –
+// der Container um jede Option enger fassen, Schrift bleibt gleich.
+:root[data-theme="v4"] .option {
+    padding: 0.2rem 0.4rem;
 }
 
 .option__input {

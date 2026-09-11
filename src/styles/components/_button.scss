@@ -1,6 +1,7 @@
 // Buttons
 
 @use "../abstract/variables" as *;
+@use "../abstract/mixins" as *;
 
 .button {
     display: inline-flex;
@@ -12,7 +13,7 @@
     border-radius: 999px;
     background-color: $color-secondary;
     color: $color-primary;
-    font-family: $font-body;
+    font-family: var(--font-body, #{$font-body});
     font-size: clamp(1.35rem, 5vw, 2.5rem);
     cursor: pointer;
     transition: transform 0.1s ease, filter 0.1s ease;
@@ -32,7 +33,32 @@
     height: clamp(1.1rem, 3.6vw, 2rem);
 }
 
+.button__icon--controller {
+    @include icon-mask("/assets/icons/controller.svg");
+}
+
+.button__icon--arrow {
+    @include icon-mask("/assets/icons/arrow_right.svg");
+}
+
 .button__label {
     text-transform: lowercase;
     font-weight: 700;
+}
+
+// Buttons, die sich farblich an das aktuelle Theme anpassen: transparenter
+// Hintergrund, Rahmen/Text/Icons in der Akzentfarbe der Kartenrückseite.
+.button--play,
+.button--start,
+.button--continue,
+.button--exit {
+    background-color: transparent;
+    border: 2px solid var(--color-card-back-1, #{$color-card-back});
+    color: var(--color-card-back-1, #{$color-card-back});
+}
+
+// food_theme (v4): Klee One wirkt optisch größer als die Standardschrift –
+// der Button-Container wird enger gefasst, die Schriftgröße bleibt gleich.
+:root[data-theme="v4"] .button {
+    padding: clamp(0.4rem, 1vw, 0.55rem) clamp(0.7rem, 2vw, 1rem);
 }

@@ -8,6 +8,7 @@ import {
   CARD_IMAGE_BASE_PATH,
   EXIT_GAME_BUTTON_ID,
   GAME_END_IMAGE_BASE_PATH,
+  GAME_ICON_BASE_PATH,
   PLAYER_COLORS,
   THEME_IMAGE_DIRS,
   THEME_WIN_ASSETS,
@@ -29,11 +30,50 @@ function cardImageSrc(symbol: string, theme: ThemeId): string {
   return assetUrl(`${CARD_IMAGE_BASE_PATH}/${THEME_IMAGE_DIRS[theme]}/${symbol}.svg`);
 }
 
+/** Farbe eines Spielers: Spieler 1 wählt, Spieler 2 bekommt den Rest. */
+export function playerColor(player: PlayerId, settings: GameSettings): PlayerColor {
+  return player === 1 ? settings.playerColor : otherPlayerColor(settings.playerColor);
+}
+
 /** Farbe (Hex) eines Spielers: Spieler 1 wählt, Spieler 2 bekommt den Rest. */
 export function playerHex(player: PlayerId, settings: GameSettings): string {
-  const color: PlayerColor =
-    player === 1 ? settings.playerColor : otherPlayerColor(settings.playerColor);
-  return PLAYER_COLORS[color];
+  return PLAYER_COLORS[playerColor(player, settings)];
+}
+
+/** Großgeschriebenes Farbwort, z. B. "Blue". */
+function capitalizedColorWord(color: PlayerColor): string {
+  return `${color.charAt(0).toUpperCase()}${color.slice(1)}`;
+}
+
+/**
+ * Bildquelle des Spieler-Icons je Theme: Variante 1 nutzt das generische,
+ * einfarbige `player_icon.svg` (eingefärbt über die Spielerfarbe), die
+ * anderen Varianten die farbigen Sieg-Bilder aus dem `game_end`-Ordner
+ * des jeweiligen Themes. `v2` (games_theme_cards) hat keine eigenen
+ * Spielerbilder und nutzt daher die von `v1` (code_vibes_theme).
+ */
+function scoreboardIcon(
+  color: PlayerColor,
+  theme: ThemeId,
+): { readonly src: string; readonly generic: boolean } {
+  if (theme === "v1") {
+    return { src: assetUrl(`${GAME_ICON_BASE_PATH}/player_icon.svg`), generic: true };
+  }
+  const sourceTheme: ThemeId = theme === "v2" ? "v1" : theme;
+  return { src: endImageSrc(`player_${color}`, sourceTheme), generic: false };
+}
+
+/**
+ * Markup des Spieler-Icons. Das generische Icon (Variante 1) ist weiß und
+ * wird per CSS-Maske in der Spielerfarbe eingefärbt; die Theme-Bilder
+ * bringen ihre Farbe bereits mit und werden als normales `<img>` genutzt.
+ */
+function renderScoreboardIcon(color: PlayerColor, theme: ThemeId, hex: string): string {
+  const icon: { readonly src: string; readonly generic: boolean } = scoreboardIcon(color, theme);
+  if (icon.generic) {
+    return `<span class="scoreboard__icon scoreboard__icon--tinted" style="background-color: ${hex}; -webkit-mask-image: url('${icon.src}'); mask-image: url('${icon.src}')"></span>`;
+  }
+  return `<img class="scoreboard__icon" src="${icon.src}" alt="">`;
 }
 
 /** Sichtbarer alt-Text einer aufgedeckten Karte ("Motif 3"). */
@@ -93,23 +133,33 @@ function renderPlayer(
 ): string {
   const active: boolean = state.status !== "won" && state.currentPlayer === player;
   const activeClass: string = active ? " scoreboard__player--active" : "";
-  const hex: string = playerHex(player, settings);
+  const color: PlayerColor = playerColor(player, settings);
+  const hex: string = PLAYER_COLORS[color];
+  const icon: string = renderScoreboardIcon(color, settings.theme, hex);
+  const label: string = settings.theme === "v1" ? `${capitalizedColorWord(color)} ` : "";
   return `
     <li class="scoreboard__player${activeClass}" style="color: ${hex}">
-      <span class="scoreboard__swatch" style="background: ${hex}"></span>
-      Player ${player}: ${state.scores[player]}
+      ${icon}
+      ${label}${state.scores[player]}
     </li>
   `;
 }
 
 /** Text unter der Punkteanzeige: wer am Zug ist bzw. das Ergebnis. */
-function renderTurnLine(state: GameState, winner: PlayerId | undefined): string {
+function renderTurnLine(
+  state: GameState,
+  settings: GameSettings,
+  winner: PlayerId | undefined,
+): string {
   if (state.status === "won") {
     const text: string =
       winner === undefined ? "Draw!" : `Player ${winner} wins!`;
     return `<p class="game-bar__turn">${text}</p>`;
   }
-  return `<p class="game-bar__turn">Player ${state.currentPlayer}'s turn</p>`;
+  const color: PlayerColor = playerColor(state.currentPlayer, settings);
+  const hex: string = PLAYER_COLORS[color];
+  const icon: string = renderScoreboardIcon(color, settings.theme, hex);
+  return `<p class="game-bar__turn">Current player: ${icon}</p>`;
 }
 
 /** Markup der Spielleiste: Punktestand, aktueller Spieler, Exit-Button. */
@@ -124,8 +174,9 @@ export function renderGameBar(
         ${renderPlayer(1, state, settings)}
         ${renderPlayer(2, state, settings)}
       </ul>
-      ${renderTurnLine(state, winner)}
+      ${renderTurnLine(state, settings, winner)}
       <button class="button button--exit" type="button" id="${EXIT_GAME_BUTTON_ID}">
+        <span class="game-bar__exit-icon" aria-hidden="true"></span>
         Exit Game
       </button>
     </header>
@@ -141,7 +192,9 @@ export function renderGame(
   const turnColor: string = playerHex(state.currentPlayer, settings);
   return `
     ${renderGameBar(state, settings, winner)}
-    ${renderBoard(state.cards, settings, turnColor)}
+    <div class="game-board__content">
+      ${renderBoard(state.cards, settings, turnColor)}
+    </div>
   `;
 }
 

@@ -30,7 +30,7 @@
 
 .modal__title {
     margin: 0;
-    font-family: $font-heading;
+    font-family: var(--font-heading, #{$font-heading});
     font-size: clamp(1.4rem, 5vw, 1.9rem);
 }
 
